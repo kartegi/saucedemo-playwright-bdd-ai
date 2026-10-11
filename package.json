@@ -1,0 +1,48 @@
+{
+  "name": "saucedemo-ui-tests",
+  "version": "1.0.0",
+  "description": "UI end-to-end test framework for saucedemo.com: Playwright + TypeScript + Playwright BDD",
+  "private": true,
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run typecheck && npm run lint && npm run format:check",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,mjs,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,feature}": "prettier --write"
+  },
+  "keywords": [
+    "playwright",
+    "playwright-bdd",
+    "typescript",
+    "bdd",
+    "e2e"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^10.0.0",
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.0.0",
+    "dotenv": "^18.0.7",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-playwright": "^2.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^17.6.0",
+    "playwright-bdd": "^9.2.1",
+    "prettier": "^3.0.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.71.1"
+  }
+}
