@@ -91,18 +91,23 @@ Project skills live in `.claude/skills/`. Use them when you write the matching c
 - `site/index.html` reads `allure/runs.json` (`id`, `createdAt`, `total`, `passed`, `status`) to fill
   the stats and the table of the latest runs. If the format of that file changes in
   `scripts/assemble-site.mjs`, change the page in the same PR.
-- Allure history is only kept for runs on `main` (`ALLURE_HISTORY_PATH`, set by CI). Local runs build
+- Allure history is only kept by `pages.yml` (`ALLURE_HISTORY_PATH`). Local runs build
   the report without history.
 - Locally there are no retries and no traces; `CI=true` switches to the CI behaviour. Use
   `--trace on` to record a trace.
 
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on every push to
-`main`: a `quality` job (`npm run check`), then an `e2e` job that runs the tests in Chromium,
-Firefox and WebKit, then an `allure-report` job that merges the results of all browsers. On `main` the report is
-published to GitHub Pages (`deploy-pages` job) together with `site/` and the Allure history. The e2e job gets the credentials from repository secrets, and only its test
-step sees them. Keep both green: run `npm run check` and the tests locally before pushing.
+GitHub Actions has two workflows in `.github/workflows/`:
+
+- `ci.yml` runs on every pull request and on every push to `main`: a `quality` job
+  (`npm run check`), then an `e2e` job that runs the tests in Chromium, Firefox and WebKit. The e2e
+  job gets the credentials from repository secrets, and only its test step sees them.
+- `pages.yml` ("Publish report") runs after `ci.yml` has finished on `main`, never for pull requests.
+  It builds the Allure report from the results of that run, assembles the site and publishes it to
+  GitHub Pages.
+
+Keep both green: run `npm run check` and the tests locally before pushing.
 
 ## Git workflow
 

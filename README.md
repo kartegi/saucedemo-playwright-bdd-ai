@@ -80,15 +80,18 @@ src/
 
 ## CI
 
-GitHub Actions runs on every pull request and on every push to `main`:
+GitHub Actions has two workflows.
+
+**CI** runs on every pull request and on every push to `main`:
 
 1. `quality`: typecheck, lint and format check (`npm run check`).
 2. `e2e`: the tests in Chromium, Firefox and WebKit, one job per browser. It starts only after
-   `quality` passes. The Playwright report, traces, screenshots and videos of failed tests and the
-   raw Allure results are uploaded as artifacts.
-3. `allure-report`: collects the Allure results of all browsers into one report and uploads it as
-   the `allure-report` artifact. On `main` it also assembles the site (see below).
-4. `deploy-pages`: on `main` only, publishes the site to GitHub Pages.
+   `quality` passes. The Playwright report, traces, screenshots and videos of failed tests are
+   uploaded as artifacts. On `main` the raw Allure results are uploaded too.
+
+**Publish report** runs only after the CI of `main` has finished, so pull requests never start it. It
+builds the Allure report from the results of that run, assembles the site (see below) and publishes
+it to GitHub Pages.
 
 The user names and the password come from repository secrets (`STANDARD_USER`,
 `LOCKED_OUT_USER`, `PROBLEM_USER`, `PERFORMANCE_GLITCH_USER`, `USER_PASSWORD`). The workflow can
@@ -97,7 +100,7 @@ also be started by hand from the Actions tab, with an optional tag or title filt
 
 ## Online report
 
-Every run on `main` publishes the site to GitHub Pages:
+Every run of CI on `main` is followed by a publication of the site to GitHub Pages:
 
 - `https://kartegi.github.io/saucedemo-playwright-bdd-ai/` is the start page (`site/index.html`).
 - `.../allure/` opens the newest Allure report.
@@ -108,7 +111,7 @@ Every run on `main` publishes the site to GitHub Pages:
 Each run builds the site on top of the site of the previous run: its reports are taken from the
 Pages artifact of that run, which is kept for 90 days, and the new report is added. The history of
 the runs is a file (`allure/history.jsonl`) that is published together with the reports, so the
-report can show trends. Pull requests build the site as well but never publish it.
+report can show trends. Pull requests neither build nor publish the site.
 
 In CI the Chromium run records a screenshot, a video and a trace for every test, and the other
 browsers do it for failed tests only. All of them stay in the published reports, so a test can be
