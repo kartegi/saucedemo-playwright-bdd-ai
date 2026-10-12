@@ -23,8 +23,18 @@ When(
   },
 );
 
-Then('I should see the products page', async ({ page }) => {
+When('I log out', async ({ inventoryPage }) => {
+  await inventoryPage.header.logout();
+});
+
+Then('I should see the products page', async ({ page, inventoryPage }) => {
   await expect(page).toHaveURL(/inventory\.html$/);
+  await expect(inventoryPage.title).toHaveText('Products');
+});
+
+Then('I should see the login page', async ({ page, loginPage }) => {
+  await expect(page).toHaveURL(/\/$/);
+  await expect(loginPage.loginButton).toBeVisible();
 });
 
 Then('I should see the login error {string}', async ({ loginPage }, message: string) => {
