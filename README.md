@@ -82,7 +82,8 @@ src/
 
 GitHub Actions has two workflows.
 
-**CI** runs on every pull request and on every push to `main`:
+**CI** runs on every pull request, on every push to `main` and every night at 00:07 UTC (01:07 or
+02:07 in Central Europe):
 
 1. `quality`: typecheck, lint and format check (`npm run check`).
 2. `e2e`: the tests in Chromium, Firefox and WebKit, one job per browser. It starts only after
@@ -100,12 +101,13 @@ also be started by hand from the Actions tab, with an optional tag or title filt
 
 ## Online report
 
-Every run of CI on `main` is followed by a publication of the site to GitHub Pages:
+Every push to `main` and every nightly run of CI is followed by a publication of the site to
+GitHub Pages:
 
 - `https://kartegi.github.io/saucedemo-playwright-bdd-ai/` is the start page (`site/index.html`).
 - `.../allure/` opens the newest Allure report.
 - Every run keeps its own report in a folder named after the date it was created (UTC), for example
-  `.../allure/2026-10-12_13-42-12/`. The five latest reports are kept, and `allure/runs.json`
+  `.../allure/2026-10-12_13-42-12/`. The five latest reports (pushes and nightly runs) are kept, and `allure/runs.json`
   lists them for the start page.
 
 Each run builds the site on top of the site of the previous run: its reports are taken from the
