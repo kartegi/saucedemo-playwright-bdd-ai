@@ -38,10 +38,13 @@ Feature: Shopping cart
 
 - First person, present tense: `I add "Sauce Labs Backpack" to the cart`.
 - Put data in double quotes (`{string}`) and use `{int}` for numbers.
+- Kinds of user use the custom `{userType}` parameter (`standard`, `locked out`, `problem`,
+  `performance glitch`): `I log in as a locked out user`.
 - **Do not use these words in a step:** click, press, button, field, input, selector, id, url,
   xpath. Say what the user does, not how the interface is operated.
 - Write expected error messages exactly as the application shows them.
-- If an existing step already says what you need, reuse its phrase instead of inventing a new one.
+- Before writing a phrase, read `features/steps/*.ts`. If an existing step already says what you
+  need, reuse its phrase instead of inventing a new one.
 
 Bad and good:
 
