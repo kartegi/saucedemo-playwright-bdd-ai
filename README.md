@@ -75,12 +75,26 @@ GitHub Actions runs on every pull request and on every push to `main`:
    `quality` passes. The Playwright report, traces, screenshots and videos of failed tests and the
    raw Allure results are uploaded as artifacts.
 3. `allure-report`: collects the Allure results of all browsers into one report and uploads it as
-   the `allure-report` artifact.
+   the `allure-report` artifact. On `main` it also assembles the site (see below).
+4. `deploy-pages`: on `main` only, publishes the site to GitHub Pages.
 
 The user names and the password come from repository secrets (`STANDARD_USER`,
 `LOCKED_OUT_USER`, `PROBLEM_USER`, `PERFORMANCE_GLITCH_USER`, `USER_PASSWORD`). The workflow can
 also be started by hand from the Actions tab, with an optional tag or title filter such as
 `@smoke`.
+
+## Online report
+
+Every run on `main` publishes the site to GitHub Pages:
+
+- `https://kartegi.github.io/saucedemo-playwright-bdd-ai/` is the start page (`site/index.html`).
+- `.../allure/` is the latest Allure report, with the history of the previous runs on `main`.
+
+The history is a file (`allure/history.jsonl`) that is published together with the report. The next
+run downloads it, adds itself and publishes it again. Pull requests build the report as an artifact
+only. In CI the Chromium run records a screenshot, a video and a trace for every test, and the
+other browsers do it for failed tests only. All of them stay in the published report, so a test can
+be investigated from the page alone.
 
 ## How I write tests
 

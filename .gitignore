@@ -10,3 +10,5 @@ playwright/.cache/
 *.log
 allure-results/
 allure-report/
+allure-history.jsonl
+_site/
