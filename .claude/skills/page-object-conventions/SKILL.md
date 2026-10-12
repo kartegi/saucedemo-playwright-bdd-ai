@@ -83,7 +83,8 @@ No `waitForTimeout`. Playwright already waits for elements and for `expect` cond
 
 ## Data and config
 
-- URLs and credentials come from `src/config/env.ts`.
+- The base URL and the credentials come from `src/config/env.ts`; credentials are read from the
+  environment and never written in code, steps or scenarios.
 - Reusable test data goes to `src/test-data/`. Do not repeat the same literal in several files.
 
 ## TypeScript

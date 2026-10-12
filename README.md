@@ -21,7 +21,7 @@ End-to-end UI test framework for [saucedemo.com](https://www.saucedemo.com), bui
 ```bash
 npm install
 npx playwright install --with-deps   # download browsers
-cp .env.example .env                 # optional: defaults already point to saucedemo.com
+cp .env.example .env                 # required: user names and the password are read from .env
 npm test
 ```
 
@@ -55,7 +55,7 @@ features/
   auth/login.feature       Gherkin scenarios, one folder per area
   steps/                   Step definitions and custom parameter types
 src/
-  config/env.ts            Typed environment config (.env + defaults)
+  config/env.ts            Typed environment config, reads .env
   fixtures/index.ts        Playwright `test` extended with page objects
   pages/                   Page Objects, one class per page
   test-data/               Users and other reusable data
@@ -65,7 +65,17 @@ src/
 
 ## CI
 
-GitHub Actions runs `npm run check` on every pull request and on every push to `main`.
+GitHub Actions runs on every pull request and on every push to `main`:
+
+1. `quality`: typecheck, lint and format check (`npm run check`).
+2. `e2e`: the tests in Chromium, Firefox and WebKit, one job per browser. It starts only after
+   `quality` passes. The report, traces, screenshots and videos of failed tests are uploaded as
+   artifacts.
+
+The user names and the password come from repository secrets (`STANDARD_USER`,
+`LOCKED_OUT_USER`, `PROBLEM_USER`, `PERFORMANCE_GLITCH_USER`, `USER_PASSWORD`). The workflow can
+also be started by hand from the Actions tab, with an optional tag or title filter such as
+`@smoke`.
 
 ## How I write tests
 
