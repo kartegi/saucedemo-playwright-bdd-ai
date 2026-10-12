@@ -18,13 +18,17 @@ Feature: Login
     Then I should see the login error "Epic sadface: Sorry, this user has been locked out."
 
   @regression
+  Scenario: Wrong password is rejected
+    When I log in as a standard user with the password "wrong_pass"
+    Then I should see the login error "Epic sadface: Username and password do not match any user in this service"
+
+  @regression
   Scenario Outline: Login is rejected for invalid input
     When I log in with username "<username>" and password "<password>"
     Then I should see the login error "<error>"
 
     Examples:
-      | username      | password     | error                                                                     |
-      | standard_user | wrong_pass   | Epic sadface: Username and password do not match any user in this service |
-      | unknown_user  | secret_sauce | Epic sadface: Username and password do not match any user in this service |
-      |               | secret_sauce | Epic sadface: Username is required                                        |
-      | standard_user |              | Epic sadface: Password is required                                        |
+      | username     | password     | error                                                                     |
+      | unknown_user | any_password | Epic sadface: Username and password do not match any user in this service |
+      |              | any_password | Epic sadface: Username is required                                        |
+      | any_user     |              | Epic sadface: Password is required                                        |
