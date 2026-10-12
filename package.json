@@ -7,6 +7,19 @@
     "node": ">=20.19"
   },
   "scripts": {
+    "bddgen": "bddgen",
+    "pretest": "npm run bddgen",
+    "test": "playwright test",
+    "test:headed": "npm run bddgen && playwright test --headed",
+    "test:ui": "npm run bddgen && playwright test --ui",
+    "test:debug": "npm run bddgen && playwright test --debug",
+    "test:smoke": "npm run bddgen && playwright test --grep @smoke",
+    "test:regression": "npm run bddgen && playwright test --grep @regression",
+    "test:chromium": "npm run bddgen && playwright test --project=chromium",
+    "test:firefox": "npm run bddgen && playwright test --project=firefox",
+    "test:webkit": "npm run bddgen && playwright test --project=webkit",
+    "report": "playwright show-report",
+    "codegen": "playwright codegen https://www.saucedemo.com",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -20,7 +33,7 @@
       "eslint --fix",
       "prettier --write"
     ],
-    "*.{json,md,yml,yaml,feature}": "prettier --write"
+    "*.{json,md,yml,yaml}": "prettier --write"
   },
   "keywords": [
     "playwright",

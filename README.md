@@ -22,16 +22,46 @@ End-to-end UI test framework for [saucedemo.com](https://www.saucedemo.com), bui
 npm install
 npx playwright install --with-deps   # download browsers
 cp .env.example .env                 # optional: defaults already point to saucedemo.com
+npm test
 ```
 
 ## Commands
 
-| Command             | Description                              |
-| ------------------- | ---------------------------------------- |
-| `npm run check`     | Typecheck + lint + format check          |
-| `npm run typecheck` | TypeScript compiler, no emit             |
-| `npm run lint`      | ESLint (`lint:fix` to auto-fix)          |
-| `npm run format`    | Prettier (`format:check` to verify only) |
+| Command                   | Description                                               |
+| ------------------------- | --------------------------------------------------------- |
+| `npm test`                | Generate specs from `.feature` files and run all tests    |
+| `npm run test:smoke`      | Only scenarios tagged `@smoke`                            |
+| `npm run test:regression` | Only scenarios tagged `@regression`                       |
+| `npm run test:chromium`   | One browser (`test:firefox` and `test:webkit` also exist) |
+| `npm run test:headed`     | Run with a visible browser                                |
+| `npm run test:ui`         | Playwright UI mode                                        |
+| `npm run test:debug`      | Playwright Inspector                                      |
+| `npm run report`          | Open the last HTML report                                 |
+| `npm run codegen`         | Record actions and get locator suggestions                |
+| `npm run check`           | Typecheck + lint + format check                           |
+| `npm run lint`            | ESLint (`lint:fix` to auto-fix)                           |
+| `npm run format`          | Prettier (`format:check` to verify only)                  |
+
+Run one scenario by its title (everything after `--` goes to Playwright):
+
+```bash
+npm test -- --project=chromium -g "Successful login"
+```
+
+## Project structure
+
+```
+features/
+  auth/login.feature       Gherkin scenarios, one folder per area
+  steps/                   Step definitions and custom parameter types
+src/
+  config/env.ts            Typed environment config (.env + defaults)
+  fixtures/index.ts        Playwright `test` extended with page objects
+  pages/                   Page Objects, one class per page
+  test-data/               Users and other reusable data
+```
+
+`.features-gen/` is generated from the `.feature` files by `npm test`. It is not committed.
 
 ## CI
 
@@ -50,4 +80,4 @@ GitHub Actions runs `npm run check` on every pull request and on every push to `
 - **Tags:** `@smoke` for the few most important quick checks, `@regression` for everything else,
   plus a tag for the area (`@cart`, `@auth`).
 - **Git:** one branch and one PR per feature, small commits with clear messages
-  (`feat(cart): add CartPage`).
+  (`feat: add CartPage`).

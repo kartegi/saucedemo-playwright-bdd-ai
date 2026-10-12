@@ -14,6 +14,16 @@ description: Use when creating or editing Page Objects, step definitions or test
   (`loginButton`, `errorMessage`), not for their markup.
 - Methods are **actions in business language**: `login`, `addToCart`, `sortBy`. They return
   nothing or plain data, and they contain **no `expect`**.
+- Every page extends `BasePage`, which provides `path` and `open()`.
+
+### Registering a new page
+
+Steps get page objects from fixtures, so a new page must be registered in
+`src/fixtures/index.ts`: add it to the `PageObjects` interface and add a line to `test.extend`.
+
+```ts
+cartPage: async ({ page }, use) => use(new CartPage(page)),
+```
 
 ## Components (`src/pages/components/`)
 
@@ -63,10 +73,13 @@ No `waitForTimeout`. Playwright already waits for elements and for `expect` cond
 
 ## Step definitions (`features/steps/<domain>.steps.ts`)
 
+- Import `Given`, `When`, `Then` and `expect` from `@fixtures/index`, not from `@playwright/test`.
+- Receive page objects through the first argument: `async ({ cartPage }, name: string) => ...`.
 - Steps are thin: they call Page Objects. No selectors and no data literals inside them.
 - **Assertions live in steps.** Use web-first forms (`toHaveText`, `toBeVisible`, `toHaveCount`),
   not `expect(await locator.textContent())`.
-- Type every parameter (`string`, `number`).
+- Type every parameter (`string`, `number`). Custom parameter types are defined in
+  `features/steps/parameter-types.ts` with `defineParameterType`.
 
 ## Data and config
 
