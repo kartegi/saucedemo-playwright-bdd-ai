@@ -26,6 +26,18 @@ export class InventoryPage extends AppPage {
     this.sortDropdown = page.getByTestId('product-sort-container');
   }
 
+  private item(productName: string): Locator {
+    return this.items.filter({ hasText: productName });
+  }
+
+  async addToCart(productName: string): Promise<void> {
+    await this.item(productName).getByRole('button', { name: 'Add to cart' }).click();
+  }
+
+  async removeFromCart(productName: string): Promise<void> {
+    await this.item(productName).getByRole('button', { name: 'Remove' }).click();
+  }
+
   async sortBy(option: SortOption): Promise<void> {
     await this.sortDropdown.selectOption(option);
   }
