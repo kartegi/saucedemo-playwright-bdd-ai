@@ -30,10 +30,20 @@ reached yet.
    unavoidable, comment why (the linter warns).
 5. **Scenarios are independent.** Each one prepares its own state.
 6. **No hardcoded credentials or URLs** in steps or pages; take them from `env.ts`.
-7. **Gherkin is declarative:** business actions, not clicks and selectors.
+7. **Gherkin is declarative:** business actions, not clicks and selectors. Details are in the
+   `gherkin-conventions` skill.
 8. **Tags:** a feature tag on the `Feature:` line (`@auth`, `@cart`...); `@smoke` for the critical
    happy path only; everything else `@regression`.
 9. **TypeScript:** no `any`, `import type` for types, use the path aliases from `tsconfig.json`.
+10. **English everywhere:** code, comments, scenarios, commit messages and PR text are in English,
+    even when I write to you in another language.
+
+## Skills
+
+Project skills live in `.claude/skills/`. Use them when you write the matching code:
+
+- `gherkin-conventions`: how to write `.feature` files and step phrases.
+- `page-object-conventions`: how to write Page Objects and step definitions.
 
 ## Git workflow
 
