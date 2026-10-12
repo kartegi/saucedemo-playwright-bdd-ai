@@ -149,9 +149,6 @@ jobs:
           cp -R site/. _site/
           cp -R allure-report/. _site/allure/
           cp allure-history.jsonl _site/allure/history.jsonl
-          # Trace archives and error-context snapshots contain the typed values, so the public
-          # site must not include them
-          find _site/allure -path '*/data/attachments/*' \( -name '*.zip' -o -name '*.md' \) -delete
 
       - name: Upload the site
         if: ${{ env.PUBLISH == 'true' }}

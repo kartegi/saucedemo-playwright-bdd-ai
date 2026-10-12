@@ -92,8 +92,8 @@ Every run on `main` publishes the site to GitHub Pages:
 
 The history is a file (`allure/history.jsonl`) that is published together with the report. The next
 run downloads it, adds itself and publishes it again. Pull requests build the report as an artifact
-only. Trace archives and error-context files of failed tests are left out of the public site,
-because they contain the typed values.
+only. The attachments of failed tests (screenshot, video, trace and error context) stay in the
+published report, so a failure can be investigated from the page alone.
 
 ## How I write tests
 

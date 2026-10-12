@@ -76,9 +76,9 @@ Project skills live in `.claude/skills/`. Use them when you write the matching c
   typed value (`Fill "..."`), including credentials. Do not change it. Report grouping is in
   `allurerc.mjs`.
 - A Pages deployment replaces the whole site, so the workflow always publishes `site/` and the
-  report together (report under `/allure/`). Never publish the report alone. The published copy
-  must not contain trace archives or `error-context` files (they hold typed values); the workflow
-  deletes them.
+  report together (report under `/allure/`). Never publish the report alone. The attachments of
+  failed tests (traces, error context) stay in the published report on purpose: they contain the
+  typed demo credentials, which are public values, and they show how failures are investigated.
 - Allure history is only kept for runs on `main` (`ALLURE_HISTORY_PATH`, set by CI). Local runs build
   the report without history.
 - Locally there are no retries and no traces; `CI=true` switches to the CI behaviour. Use
