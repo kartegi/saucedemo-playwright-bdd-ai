@@ -8,3 +8,5 @@ playwright/.cache/
 .env
 .DS_Store
 *.log
+allure-results/
+allure-report/

@@ -7,14 +7,15 @@ End-to-end UI test framework for [saucedemo.com](https://www.saucedemo.com), bui
 
 ## Tech stack
 
-| Area           | Tool                                                        |
-| -------------- | ----------------------------------------------------------- |
-| Test runner    | [Playwright Test](https://playwright.dev)                   |
-| BDD / Gherkin  | [playwright-bdd](https://vitalets.github.io/playwright-bdd) |
-| Language       | TypeScript (strict mode, path aliases)                      |
-| Design pattern | Page Object Model + Playwright fixtures                     |
-| Code quality   | ESLint (typescript-eslint + playwright plugin), Prettier    |
-| Git hooks      | Husky + lint-staged                                         |
+| Area           | Tool                                                                |
+| -------------- | ------------------------------------------------------------------- |
+| Test runner    | [Playwright Test](https://playwright.dev)                           |
+| BDD / Gherkin  | [playwright-bdd](https://vitalets.github.io/playwright-bdd)         |
+| Language       | TypeScript (strict mode, path aliases)                              |
+| Design pattern | Page Object Model + Playwright fixtures                             |
+| Reporting      | Playwright HTML report, [Allure Report 3](https://allurereport.org) |
+| Code quality   | ESLint (typescript-eslint + playwright plugin), Prettier            |
+| Git hooks      | Husky + lint-staged                                                 |
 
 ## Getting started
 
@@ -36,7 +37,9 @@ npm test
 | `npm run test:headed`     | Run with a visible browser                                |
 | `npm run test:ui`         | Playwright UI mode                                        |
 | `npm run test:debug`      | Playwright Inspector                                      |
-| `npm run report`          | Open the last HTML report                                 |
+| `npm run report`          | Open the last Playwright HTML report                      |
+| `npm run allure:generate` | Build the Allure report from `allure-results/`            |
+| `npm run allure:open`     | Open the generated Allure report                          |
 | `npm run codegen`         | Record actions and get locator suggestions                |
 | `npm run check`           | Typecheck + lint + format check                           |
 | `npm run lint`            | ESLint (`lint:fix` to auto-fix)                           |
@@ -69,8 +72,10 @@ GitHub Actions runs on every pull request and on every push to `main`:
 
 1. `quality`: typecheck, lint and format check (`npm run check`).
 2. `e2e`: the tests in Chromium, Firefox and WebKit, one job per browser. It starts only after
-   `quality` passes. The report, traces, screenshots and videos of failed tests are uploaded as
-   artifacts.
+   `quality` passes. The Playwright report, traces, screenshots and videos of failed tests and the
+   raw Allure results are uploaded as artifacts.
+3. `allure-report`: collects the Allure results of all browsers into one report and uploads it as
+   the `allure-report` artifact.
 
 The user names and the password come from repository secrets (`STANDARD_USER`,
 `LOCKED_OUT_USER`, `PROBLEM_USER`, `PERFORMANCE_GLITCH_USER`, `USER_PASSWORD`). The workflow can
