@@ -89,104 +89,11 @@ jobs:
             test-results/
           retention-days: 14
 
+      # Only the publishing workflow reads these, and it runs for main only
       - name: Upload Allure results
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && github.event_name != 'pull_request' }}
         uses: actions/upload-artifact@v7
         with:
           name: allure-results-${{ matrix.project }}
           path: allure-results/
           retention-days: 14
-
-  allure-report:
-    name: Allure report
-    needs: e2e
-    if: ${{ !cancelled() && needs.e2e.result != 'skipped' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      actions: read
-    env:
-      HUSKY: 0
-      # The history and the site are published only for runs on main
-      PUBLISH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Download results of all browsers
-        uses: actions/download-artifact@v8
-        with:
-          pattern: allure-results-*
-          path: allure-results
-          merge-multiple: true
-
-      - name: Get the previous site
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          run_id=$(gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts?name=github-pages&per_page=1" --jq '.artifacts[] | select(.expired == false) | .workflow_run.id')
-          if [ -n "$run_id" ]; then
-            gh run download "$run_id" --name github-pages --dir previous
-            mkdir previous-site
-            tar -xf "$(find previous -name '*.tar' | head -n 1)" -C previous-site
-            echo "Previous site from run $run_id:"
-            ls previous-site/allure 2>/dev/null || echo "  (no allure folder)"
-            [ -f previous-site/allure/history.jsonl ] && cp previous-site/allure/history.jsonl allure-history.jsonl
-          else
-            echo "No previous site artifact"
-          fi
-          if [ ! -s allure-history.jsonl ]; then
-            curl -fsSL "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/history.jsonl" -o allure-history.jsonl || echo "No history yet"
-            [ -s allure-history.jsonl ] || rm -f allure-history.jsonl
-          fi
-
-      - name: Build the report
-        env:
-          ALLURE_HISTORY_PATH: ${{ env.PUBLISH == 'true' && 'allure-history.jsonl' || '' }}
-        run: npm run allure:generate
-
-      - name: Upload Allure report
-        uses: actions/upload-artifact@v7
-        with:
-          name: allure-report
-          path: allure-report/
-          retention-days: 14
-
-      - name: Assemble the site
-        run: |
-          previous=""
-          [ -d previous-site ] && previous="previous-site"
-          node scripts/assemble-site.mjs --report allure-report --site site --out _site \
-            ${previous:+--previous "$previous"} --history allure-history.jsonl --keep 5
-
-      - name: Upload the site
-        if: ${{ env.PUBLISH == 'true' }}
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: _site
-          # The next run takes the reports of this site from this artifact
-          retention-days: 90
-
-  deploy-pages:
-    name: Publish to GitHub Pages
-    needs: allure-report
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.allure-report.result == 'success' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v5

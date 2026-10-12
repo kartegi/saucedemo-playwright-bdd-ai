@@ -1,0 +1,128 @@
+name: Publish report
+
+# Runs after the CI of main has finished. Pull requests never reach this workflow.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+# One publication at a time, so that no report is lost
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    name: Build the site
+    # Publish pushes and scheduled runs, also when some tests failed. Not cancelled or manual runs
+    if: ${{ github.event.workflow_run.conclusion != 'cancelled' && contains(fromJSON('["push", "schedule"]'), github.event.workflow_run.event) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    env:
+      HUSKY: 0
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ github.event.workflow_run.id }}
+    outputs:
+      found: ${{ steps.results.outputs.found }}
+    steps:
+      # The code of the commit that was tested, not the latest one
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check that the tests have run
+        id: results
+        run: |
+          count=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" --jq '[.artifacts[] | select(.name | startswith("allure-results-"))] | length')
+          echo "Allure results of the tested run: $count"
+          echo "found=$([ "$count" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Download results of all browsers
+        if: ${{ steps.results.outputs.found == 'true' }}
+        uses: actions/download-artifact@v8
+        with:
+          pattern: allure-results-*
+          path: allure-results
+          merge-multiple: true
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
+      - name: Get the previous site
+        if: ${{ steps.results.outputs.found == 'true' }}
+        run: |
+          run_id=$(gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts?name=github-pages&per_page=1" --jq '.artifacts[] | select(.expired == false) | .workflow_run.id')
+          if [ -n "$run_id" ]; then
+            gh run download "$run_id" --name github-pages --dir previous
+            mkdir previous-site
+            tar -xf "$(find previous -name '*.tar' | head -n 1)" -C previous-site
+            echo "Previous site from run $run_id:"
+            ls previous-site/allure 2>/dev/null || echo "  (no allure folder)"
+            [ -f previous-site/allure/history.jsonl ] && cp previous-site/allure/history.jsonl allure-history.jsonl
+          else
+            echo "No previous site artifact"
+          fi
+          if [ ! -s allure-history.jsonl ]; then
+            curl -fsSL "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/history.jsonl" -o allure-history.jsonl || echo "No history yet"
+            [ -s allure-history.jsonl ] || rm -f allure-history.jsonl
+          fi
+
+      - name: Build the report
+        if: ${{ steps.results.outputs.found == 'true' }}
+        env:
+          ALLURE_HISTORY_PATH: allure-history.jsonl
+        run: npm run allure:generate
+
+      - name: Upload Allure report
+        if: ${{ steps.results.outputs.found == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: allure-report
+          path: allure-report/
+          retention-days: 14
+
+      - name: Assemble the site
+        if: ${{ steps.results.outputs.found == 'true' }}
+        run: |
+          previous=""
+          [ -d previous-site ] && previous="previous-site"
+          node scripts/assemble-site.mjs --report allure-report --site site --out _site \
+            ${previous:+--previous "$previous"} --history allure-history.jsonl --keep 5
+
+      - name: Upload the site
+        if: ${{ steps.results.outputs.found == 'true' }}
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+          # The next run takes the reports of this site from this artifact
+          retention-days: 90
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: report
+    if: ${{ needs.report.outputs.found == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
