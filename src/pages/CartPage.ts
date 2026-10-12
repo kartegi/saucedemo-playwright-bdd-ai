@@ -7,12 +7,14 @@ export class CartPage extends AppPage {
   readonly items: Locator;
   readonly itemNames: Locator;
   readonly continueShoppingButton: Locator;
+  readonly checkoutButton: Locator;
 
   constructor(page: Page) {
     super(page);
     this.items = page.getByTestId('inventory-item');
     this.itemNames = page.getByTestId('inventory-item-name');
     this.continueShoppingButton = page.getByTestId('continue-shopping');
+    this.checkoutButton = page.getByTestId('checkout');
   }
 
   async removeItem(productName: string): Promise<void> {
@@ -24,5 +26,9 @@ export class CartPage extends AppPage {
 
   async continueShopping(): Promise<void> {
     await this.continueShoppingButton.click();
+  }
+
+  async checkout(): Promise<void> {
+    await this.checkoutButton.click();
   }
 }
