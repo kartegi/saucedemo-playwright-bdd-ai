@@ -88,6 +88,9 @@ Project skills live in `.claude/skills/`. Use them when you write the matching c
   (`attachEverything` in `playwright.config.ts`), the other browsers only for failures. They stay in
   the published report on purpose. Traces and error-context files contain the typed demo
   credentials, which are public values.
+- `site/index.html` reads `allure/runs.json` (`id`, `createdAt`, `total`, `passed`, `status`) to fill
+  the stats and the table of the latest runs. If the format of that file changes in
+  `scripts/assemble-site.mjs`, change the page in the same PR.
 - Allure history is only kept for runs on `main` (`ALLURE_HISTORY_PATH`, set by CI). Local runs build
   the report without history.
 - Locally there are no retries and no traces; `CI=true` switches to the CI behaviour. Use
