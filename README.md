@@ -61,7 +61,9 @@ src/
   config/env.ts            Typed environment config, reads .env
   fixtures/index.ts        Playwright `test` extended with page objects
   pages/                   Page Objects, one class per page
+    components/            Parts shared by several pages (header, footer)
   test-data/               Users and other reusable data
+  utils/                   Helpers (fast login through a cookie)
 ```
 
 `.features-gen/` is generated from the `.feature` files by `npm test`. It is not committed.

@@ -26,8 +26,10 @@ reached yet.
 features/<domain>/*.feature  WHAT is verified, in business language (Gherkin)
 features/steps/              step definitions and custom parameter types
 src/pages/                   Page Objects: locators and actions, one class per page
+src/pages/components/        parts shared by several pages (header, footer)
 src/fixtures/index.ts        gives steps their page objects; exports Given/When/Then/expect
 src/test-data/               users and other reusable data
+src/utils/                   helpers, for example `authenticateAs` (login through a cookie)
 src/config/env.ts            typed environment config; credentials come from `.env`
 allurerc.mjs                 Allure report settings (grouping, history)
 site/                        source of the GitHub Pages site; the Allure report goes to `/allure/`
@@ -43,7 +45,9 @@ site/                        source of the GitHub Pages site; the Allure report 
    No CSS/XPath unless nothing else works; explain why in a comment.
 4. **No `waitForTimeout`.** Rely on auto-waiting and web-first assertions. If a pause is truly
    unavoidable, comment why (the linter warns).
-5. **Scenarios are independent.** Each one prepares its own state.
+5. **Scenarios are independent.** Each one prepares its own state. Preconditions use
+   `Given I am logged in as a {userType} user` (a cookie, fast); the login form is used only in
+   `features/auth/login.feature`.
 6. **No credentials in code, scenarios or docs.** User names and the password come from the
    environment (`requireEnv` in `env.ts`, used by `src/test-data/users.ts`). Locally they are in
    `.env`, in CI in repository secrets. Scenarios may only use made-up values.
