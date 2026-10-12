@@ -100,13 +100,19 @@ also be started by hand from the Actions tab, with an optional tag or title filt
 Every run on `main` publishes the site to GitHub Pages:
 
 - `https://kartegi.github.io/saucedemo-playwright-bdd-ai/` is the start page (`site/index.html`).
-- `.../allure/` is the latest Allure report, with the history of the previous runs on `main`.
+- `.../allure/` opens the newest Allure report.
+- Every run keeps its own report in a folder named after the date it was created (UTC), for example
+  `.../allure/2026-10-12_13-42-12/`. The five latest reports are kept, and `allure/runs.json`
+  lists them for the start page.
 
-The history is a file (`allure/history.jsonl`) that is published together with the report. The next
-run downloads it, adds itself and publishes it again. Pull requests build the report as an artifact
-only. In CI the Chromium run records a screenshot, a video and a trace for every test, and the
-other browsers do it for failed tests only. All of them stay in the published report, so a test can
-be investigated from the page alone.
+Each run builds the site on top of the site of the previous run: its reports are taken from the
+Pages artifact of that run, which is kept for 90 days, and the new report is added. The history of
+the runs is a file (`allure/history.jsonl`) that is published together with the reports, so the
+report can show trends. Pull requests build the site as well but never publish it.
+
+In CI the Chromium run records a screenshot, a video and a trace for every test, and the other
+browsers do it for failed tests only. All of them stay in the published reports, so a test can be
+investigated from the page alone.
 
 ## How I write tests
 
