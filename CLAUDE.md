@@ -45,6 +45,11 @@ Project skills live in `.claude/skills/`. Use them when you write the matching c
 - `gherkin-conventions`: how to write `.feature` files and step phrases.
 - `page-object-conventions`: how to write Page Objects and step definitions.
 
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) runs `npm run check` on every pull request and on every
+push to `main`. Keep it green: run `npm run check` locally before pushing.
+
 ## Git workflow
 
 - One branch and PR per feature or concern (`feat/cart`, `ci/e2e-tests`, `chore/...`).
