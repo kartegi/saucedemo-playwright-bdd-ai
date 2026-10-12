@@ -12,7 +12,7 @@ Follow these steps in order and do not skip the verification.
    data you can reuse.
 2. **If a page or element is new, look at the real page before writing locators.** Use the
    Playwright browser tools if you have them: open https://www.saucedemo.com and inspect the DOM.
-   Log in with the public demo credentials from `.env.example`. Without browser tools, ask me to
+   Log in with the credentials from my local `.env`. Without browser tools, ask me to
    run `npm run codegen` and share what it shows. Prefer `data-test` attributes.
 3. **Write the scenario** following the `gherkin-conventions` skill.
 4. **Run `npx bddgen`.** It prints a snippet for every missing step. Implement only those; every

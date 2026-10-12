@@ -1,5 +1,5 @@
 import { expect, Given, Then, When } from '@fixtures/index';
-import { getCredentials, type UserType } from '@test-data/users';
+import { getCredentials, getUsername, type UserType } from '@test-data/users';
 
 Given('I am on the login page', async ({ loginPage }) => {
   await loginPage.open();
@@ -8,6 +8,13 @@ Given('I am on the login page', async ({ loginPage }) => {
 When('I log in as a {userType} user', async ({ loginPage }, type: UserType) => {
   await loginPage.login(getCredentials(type));
 });
+
+When(
+  'I log in as a {userType} user with the password {string}',
+  async ({ loginPage }, type: UserType, password: string) => {
+    await loginPage.login({ username: getUsername(type), password });
+  },
+);
 
 When(
   'I log in with username {string} and password {string}',
