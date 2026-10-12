@@ -1,5 +1,7 @@
 # SauceDemo UI Tests
 
+[![CI](https://github.com/kartegi/saucedemo-playwright-bdd-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/kartegi/saucedemo-playwright-bdd-ai/actions/workflows/ci.yml)
+
 End-to-end UI test framework for [saucedemo.com](https://www.saucedemo.com), built with
 **Playwright**, **TypeScript** and **Playwright BDD** (Gherkin).
 
@@ -30,6 +32,10 @@ cp .env.example .env                 # optional: defaults already point to sauce
 | `npm run typecheck` | TypeScript compiler, no emit             |
 | `npm run lint`      | ESLint (`lint:fix` to auto-fix)          |
 | `npm run format`    | Prettier (`format:check` to verify only) |
+
+## CI
+
+GitHub Actions runs `npm run check` on every pull request and on every push to `main`.
 
 ## How I write tests
 
