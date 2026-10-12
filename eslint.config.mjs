@@ -13,6 +13,7 @@ export default tseslint.config(
       'blob-report/',
       'allure-results/',
       'allure-report/',
+      '_site/',
     ],
   },
   js.configs.recommended,
@@ -27,6 +28,10 @@ export default tseslint.config(
       'playwright/no-conditional-in-test': 'error',
       'playwright/no-wait-for-timeout': 'warn',
     },
+  },
+  {
+    files: ['**/*.mjs'],
+    languageOptions: { globals: { process: 'readonly' } },
   },
   {
     rules: {
