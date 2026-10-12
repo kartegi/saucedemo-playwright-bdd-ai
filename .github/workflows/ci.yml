@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Every night at 00:07 UTC (01:07 in winter, 02:07 in summer in Central Europe). Not at the full
+  # hour, because GitHub delays or drops scheduled runs at the start of every hour
+  schedule:
+    - cron: '7 0 * * *'
   workflow_dispatch:
     inputs:
       grep:
@@ -11,8 +15,9 @@ on:
         required: false
         default: ''
 
+# The event is part of the group, so that a nightly run and a push to main do not cancel each other
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:

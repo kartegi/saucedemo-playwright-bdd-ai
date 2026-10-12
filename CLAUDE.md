@@ -91,6 +91,9 @@ Project skills live in `.claude/skills/`. Use them when you write the matching c
 - `site/index.html` reads `allure/runs.json` (`id`, `createdAt`, `total`, `passed`, `status`) to fill
   the stats and the table of the latest runs. If the format of that file changes in
   `scripts/assemble-site.mjs`, change the page in the same PR.
+- Scheduled runs happen on the latest commit of `main` only. In a public repository GitHub disables
+  the schedule after 60 days without repository activity; it can be enabled again in the Actions
+  tab. Nightly runs are published like pushes, so they also fill the five-report archive.
 - Allure history is only kept by `pages.yml` (`ALLURE_HISTORY_PATH`). Local runs build
   the report without history.
 - Locally there are no retries and no traces; `CI=true` switches to the CI behaviour. Use
@@ -100,7 +103,8 @@ Project skills live in `.claude/skills/`. Use them when you write the matching c
 
 GitHub Actions has two workflows in `.github/workflows/`:
 
-- `ci.yml` runs on every pull request and on every push to `main`: a `quality` job
+- `ci.yml` runs on every pull request, on every push to `main` and every night at 00:07 UTC
+  (`schedule`, not at the full hour because GitHub delays those runs): a `quality` job
   (`npm run check`), then an `e2e` job that runs the tests in Chromium, Firefox and WebKit. The e2e
   job gets the credentials from repository secrets, and only its test step sees them.
 - `pages.yml` ("Publish report") runs after `ci.yml` has finished on `main`, never for pull requests.
