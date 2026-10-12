@@ -14,7 +14,9 @@ description: Use when creating or editing Page Objects, step definitions or test
   (`loginButton`, `errorMessage`), not for their markup.
 - Methods are **actions in business language**: `login`, `addToCart`, `sortBy`. They return
   nothing or plain data, and they contain **no `expect`**.
-- Every page extends `BasePage`, which provides `path` and `open()`.
+- Every page extends `BasePage`, which provides `path` and `open()`. Pages shown after login
+  extend `AppPage` (a `BasePage` with the header, footer and title); the login page does not, because
+  it has none of them.
 
 ### Registering a new page
 
@@ -80,6 +82,12 @@ No `waitForTimeout`. Playwright already waits for elements and for `expect` cond
   not `expect(await locator.textContent())`.
 - Type every parameter (`string`, `number`). Custom parameter types are defined in
   `features/steps/parameter-types.ts` with `defineParameterType`.
+
+## Logging in
+
+Preconditions log in through the cookie: `Given I am logged in as a {userType} user` (it uses
+`authenticateAs` from `src/utils/auth.ts`). Do not fill the login form outside
+`features/auth/login.feature`.
 
 ## Data and config
 

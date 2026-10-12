@@ -43,6 +43,8 @@ Feature: Shopping cart
 - **Do not use these words in a step:** click, press, button, field, input, selector, id, url,
   xpath. Say what the user does, not how the interface is operated.
 - Write expected error messages exactly as the application shows them.
+- When a step needs several rows of data, give it a data table under the step and read it in the
+  step definition with `table.hashes()` (see the footer scenario).
 - Before writing a phrase, read `features/steps/*.ts`. If an existing step already says what you
   need, reuse its phrase instead of inventing a new one.
 
