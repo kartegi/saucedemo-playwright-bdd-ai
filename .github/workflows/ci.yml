@@ -105,6 +105,7 @@ jobs:
     timeout-minutes: 10
     env:
       HUSKY: 0
+      PUBLISH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v7
 
@@ -123,7 +124,15 @@ jobs:
           path: allure-results
           merge-multiple: true
 
+      - name: Fetch the history of previous runs
+        if: ${{ env.PUBLISH == 'true' }}
+        run: |
+          curl -fsSL "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure/history.jsonl" -o allure-history.jsonl || echo "No history yet"
+          [ -s allure-history.jsonl ] || rm -f allure-history.jsonl
+
       - name: Build the report
+        env:
+          ALLURE_HISTORY_PATH: ${{ env.PUBLISH == 'true' && 'allure-history.jsonl' || '' }}
         run: npm run allure:generate
 
       - name: Upload Allure report
@@ -132,3 +141,36 @@ jobs:
           name: allure-report
           path: allure-report/
           retention-days: 14
+
+      - name: Assemble the site
+        if: ${{ env.PUBLISH == 'true' }}
+        run: |
+          mkdir -p _site/allure
+          cp -R site/. _site/
+          cp -R allure-report/. _site/allure/
+          cp allure-history.jsonl _site/allure/history.jsonl
+          # Trace archives and error-context snapshots contain the typed values, so the public
+          # site must not include them
+          find _site/allure -path '*/data/attachments/*' \( -name '*.zip' -o -name '*.md' \) -delete
+
+      - name: Upload the site
+        if: ${{ env.PUBLISH == 'true' }}
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy-pages:
+    name: Publish to GitHub Pages
+    needs: allure-report
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.allure-report.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
