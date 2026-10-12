@@ -68,6 +68,16 @@ src/
 
 `.features-gen/` is generated from the `.feature` files by `npm test`. It is not committed.
 
+## What the tests cover
+
+- **Login:** successful login, a locked out user, invalid input.
+- **Logout.**
+- **Product catalog:** all products are shown, sorting by name and by price.
+- **Shopping cart:** add products, remove them on the products page and on the cart page, continue
+  shopping.
+- **Checkout:** a complete order and the validation of the form.
+- **Footer:** links to the social profiles.
+
 ## CI
 
 GitHub Actions runs on every pull request and on every push to `main`:
