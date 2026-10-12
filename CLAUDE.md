@@ -16,6 +16,7 @@ reached yet.
 | `npm test -- --project=chromium -g "<scenario title>"` | Run one scenario (fastest loop)                                  |
 | `npx bddgen`                                           | Generate specs; prints a snippet for every missing step          |
 | `npm run check`                                        | typecheck + eslint + prettier. **Run before finishing any task** |
+| `npm run allure:generate` / `npm run allure:open`      | Build and open the Allure report from `allure-results/`          |
 | `npm run lint:fix`                                     | Auto-fix ESLint issues                                           |
 | `npm run format`                                       | Format everything with Prettier                                  |
 
@@ -69,6 +70,9 @@ Project skills live in `.claude/skills/`. Use them when you write the matching c
   `performance glitch`) from `features/steps/parameter-types.ts`.
 - `playwright.config.ts` must list `src/fixtures/index.ts` in `steps`, otherwise `bddgen` fails with
   "Can't guess test instance".
+- Allure is configured with `detail: false` on purpose: with the default, the report prints every
+  typed value (`Fill "..."`), including credentials. Do not change it. Report grouping is in
+  `allurerc.mjs`.
 - Locally there are no retries and no traces; `CI=true` switches to the CI behaviour. Use
   `--trace on` to record a trace.
 
@@ -76,7 +80,7 @@ Project skills live in `.claude/skills/`. Use them when you write the matching c
 
 GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on every push to
 `main`: a `quality` job (`npm run check`), then an `e2e` job that runs the tests in Chromium,
-Firefox and WebKit. The e2e job gets the credentials from repository secrets, and only its test
+Firefox and WebKit, then an `allure-report` job that merges the results of all browsers. The e2e job gets the credentials from repository secrets, and only its test
 step sees them. Keep both green: run `npm run check` and the tests locally before pushing.
 
 ## Git workflow
