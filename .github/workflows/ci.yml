@@ -24,7 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      # Git hooks are only useful on a developer machine
       HUSKY: 0
     steps:
       - uses: actions/checkout@v7
@@ -66,7 +65,6 @@ jobs:
         run: npx playwright install --with-deps ${{ matrix.project }}
 
       - name: Run tests
-        # Credentials are exposed to this step only
         env:
           STANDARD_USER: ${{ secrets.STANDARD_USER }}
           LOCKED_OUT_USER: ${{ secrets.LOCKED_OUT_USER }}
@@ -89,4 +87,48 @@ jobs:
           path: |
             playwright-report/
             test-results/
+          retention-days: 14
+
+      - name: Upload Allure results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: allure-results-${{ matrix.project }}
+          path: allure-results/
+          retention-days: 14
+
+  allure-report:
+    name: Allure report
+    needs: e2e
+    if: ${{ !cancelled() && needs.e2e.result != 'skipped' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      HUSKY: 0
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download results of all browsers
+        uses: actions/download-artifact@v8
+        with:
+          pattern: allure-results-*
+          path: allure-results
+          merge-multiple: true
+
+      - name: Build the report
+        run: npm run allure:generate
+
+      - name: Upload Allure report
+        uses: actions/upload-artifact@v7
+        with:
+          name: allure-report
+          path: allure-report/
           retention-days: 14
