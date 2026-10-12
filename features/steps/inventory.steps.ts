@@ -19,6 +19,14 @@ When('I sort products by {string}', async ({ inventoryPage }, label: string) => 
   await inventoryPage.sortBy(SORT_LABELS[toSortLabel(label)]);
 });
 
+When('I add {string} to the cart', async ({ inventoryPage }, productName: string) => {
+  await inventoryPage.addToCart(productName);
+});
+
+When('I remove {string} on the products page', async ({ inventoryPage }, productName: string) => {
+  await inventoryPage.removeFromCart(productName);
+});
+
 Then('I should see all products', async ({ inventoryPage }) => {
   await expect(inventoryPage.items).toHaveCount(PRODUCTS_COUNT);
 });
