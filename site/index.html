@@ -3,24 +3,950 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SauceDemo UI Tests</title>
+    <title>SauceDemo UI Tests · Bug Hunter Edition</title>
+    <meta
+      name="description"
+      content="End-to-end UI tests for saucedemo.com with Playwright, TypeScript and Playwright BDD. Live Allure report, CI pipeline and AI co-op."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2011%208%22%20shape-rendering%3D%22crispEdges%22%3E%3Cg%20fill%3D%22%23ff3da5%22%3E%3Crect%20x%3D%222%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22/%3E%3Crect%20x%3D%228%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22/%3E%3Crect%20x%3D%223%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22/%3E%3Crect%20x%3D%227%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%227%22%20height%3D%221%22/%3E%3Crect%20x%3D%221%22%20y%3D%223%22%20width%3D%222%22%20height%3D%221%22/%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%223%22%20height%3D%221%22/%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%222%22%20height%3D%221%22/%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%2211%22%20height%3D%221%22/%3E%3Crect%20x%3D%220%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22/%3E%3Crect%20x%3D%222%22%20y%3D%225%22%20width%3D%227%22%20height%3D%221%22/%3E%3Crect%20x%3D%2210%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22/%3E%3Crect%20x%3D%220%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22/%3E%3Crect%20x%3D%228%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22/%3E%3Crect%20x%3D%2210%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22/%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%222%22%20height%3D%221%22/%3E%3Crect%20x%3D%226%22%20y%3D%227%22%20width%3D%222%22%20height%3D%221%22/%3E%3C/g%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      :root {
+        --bg: #0b0b24;
+        --panel: #15153f;
+        --ink: #eceaff;
+        --muted: #a8a8de;
+        --pink: #ff3da5;
+        --cyan: #2de2ff;
+        --yellow: #ffd93d;
+        --green: #4dff88;
+        --pixel: 'Press Start 2P', ui-monospace, 'Courier New', monospace;
+        --term: 'VT323', ui-monospace, 'Courier New', monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
       body {
-        font-family: system-ui, sans-serif;
-        max-width: 40rem;
-        margin: 4rem auto;
-        padding: 0 1rem;
+        margin: 0;
+        min-height: 100vh;
+        background-color: var(--bg);
+        background-image:
+          radial-gradient(#ffffff55 1px, transparent 1.6px),
+          radial-gradient(#2de2ff44 1px, transparent 1.6px);
+        background-size:
+          90px 90px,
+          140px 140px;
+        background-position:
+          0 0,
+          45px 60px;
+        color: var(--ink);
+        font-family: var(--term);
+        font-size: 1.5rem;
+        line-height: 1.25;
+      }
+
+      /* CRT look: scanlines and a soft vignette */
+      body::before,
+      body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 20;
+      }
+      body::before {
+        background: repeating-linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.14) 0 2px,
+          transparent 2px 4px
+        );
+      }
+      body::after {
+        background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.5) 100%);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      code {
+        font-family: var(--term);
+        color: var(--cyan);
+      }
+
+      .defs {
+        position: absolute;
+      }
+
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+
+      :focus-visible {
+        outline: 4px solid var(--yellow);
+        outline-offset: 4px;
+      }
+
+      h1,
+      h2,
+      h3,
+      .hud,
+      .btn,
+      .tag {
+        font-family: var(--pixel);
+        font-weight: 400;
+      }
+
+      /* ---------- HUD ---------- */
+      .hud {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.75rem 1.5rem;
+        padding: 1rem clamp(1rem, 4vw, 2.5rem);
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        background: #000;
+        border-bottom: 4px solid var(--pink);
+      }
+      .hud b {
+        color: var(--yellow);
+        font-weight: 400;
+      }
+      .lives {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+      }
+      .heart {
+        width: 21px;
+        height: 18px;
+        fill: var(--pink);
+        shape-rendering: crispEdges;
+      }
+
+      main {
+        max-width: 66rem;
+        margin: 0 auto;
+        padding: 0 clamp(1rem, 4vw, 2.5rem) 4rem;
+      }
+
+      section {
+        margin-top: clamp(3.5rem, 8vw, 5.5rem);
+        scroll-margin-top: 1.5rem;
+      }
+
+      h2 {
+        margin: 0 0 1.75rem;
+        font-size: clamp(0.85rem, 2.6vw, 1.2rem);
+        line-height: 1.6;
+        color: var(--cyan);
+        text-shadow: 3px 3px 0 #000;
+      }
+      h2::before {
+        content: '> ';
+        color: var(--pink);
+      }
+
+      /* ---------- Hero ---------- */
+      .hero {
+        text-align: center;
+        padding-top: clamp(2.5rem, 7vw, 4.5rem);
+      }
+      .invader {
+        width: clamp(110px, 22vw, 168px);
+        height: auto;
+        fill: var(--pink);
+        shape-rendering: crispEdges;
+        filter: drop-shadow(0 0 12px #ff3da5aa);
+        animation: bob 1.2s steps(2) infinite;
+      }
+      .edition {
+        margin: 1.5rem 0 0;
+        font-family: var(--pixel);
+        font-size: clamp(0.6rem, 2vw, 0.85rem);
+        color: var(--yellow);
+        letter-spacing: 0.1em;
+      }
+      h1 {
+        margin: 1.25rem 0 0;
+        font-size: clamp(1.5rem, 7.2vw, 3.6rem);
+        line-height: 1.35;
+        color: var(--ink);
+        text-shadow:
+          4px 4px 0 var(--pink),
+          8px 8px 0 #000;
+      }
+      .tagline {
+        margin: 1.75rem 0 0;
+        font-size: clamp(1.4rem, 3.4vw, 2rem);
+        color: var(--cyan);
+      }
+      .cta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.25rem;
+        margin: 2.25rem 0 0;
+      }
+      .hint {
+        margin: 1rem 0 0;
+        color: var(--muted);
+      }
+
+      .btn {
+        --c: var(--cyan);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 1.1rem 1.5rem;
+        font-size: clamp(0.7rem, 2.2vw, 0.95rem);
+        text-decoration: none;
+        color: #000;
+        background: var(--c);
+        box-shadow:
+          0 -4px 0 0 var(--c),
+          0 4px 0 0 var(--c),
+          -4px 0 0 0 var(--c),
+          4px 0 0 0 var(--c),
+          8px 8px 0 0 #000;
+        margin: 4px;
+        transition: transform 0.1s steps(2);
+      }
+      .btn:hover {
+        transform: translate(-2px, -2px);
+        filter: brightness(1.15);
+      }
+      .btn:active {
+        transform: translate(4px, 4px);
+      }
+      .btn-start {
+        --c: var(--yellow);
+      }
+      .btn-ghost {
+        --c: var(--pink);
+      }
+      .play {
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 9px 0 9px 14px;
+        border-color: transparent transparent transparent #000;
+        animation: blink 1s steps(1) infinite;
+      }
+
+      /* ---------- Panels ---------- */
+      .panel {
+        --c: var(--cyan);
+        margin: 4px;
+        padding: 1.25rem 1.5rem;
+        background: var(--panel);
+        box-shadow:
+          0 -4px 0 0 var(--c),
+          0 4px 0 0 var(--c),
+          -4px 0 0 0 var(--c),
+          4px 0 0 0 var(--c),
+          8px 8px 0 0 #000;
+      }
+      .c-pink {
+        --c: var(--pink);
+      }
+      .c-yellow {
+        --c: var(--yellow);
+      }
+      .c-green {
+        --c: var(--green);
+      }
+      .c-cyan {
+        --c: var(--cyan);
+      }
+
+      /* ---------- Stats ---------- */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 1.5rem;
+        margin: 0;
+      }
+      .stats dt {
+        font-family: var(--pixel);
+        font-size: 0.62rem;
+        color: var(--muted);
+        letter-spacing: 0.05em;
+      }
+      .stats dd {
+        margin: 0.6rem 0 0;
+        font-size: 2.2rem;
+        color: var(--yellow);
+      }
+      .stats .ok {
+        color: var(--green);
+      }
+      .gauge-wrap {
+        margin-top: 1.75rem;
+      }
+      .gauge-label {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--pixel);
+        font-size: 0.62rem;
+        color: var(--muted);
+      }
+      .gauge {
+        height: 26px;
+        margin-top: 0.75rem;
+        background: #000;
+        border: 4px solid var(--ink);
+      }
+      .gauge i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: repeating-linear-gradient(90deg, var(--green) 0 14px, transparent 14px 18px);
+        transition: width 1.2s steps(14);
+      }
+      .live-note {
+        margin: 1.25rem 0 0;
+        font-size: 1.25rem;
+        color: var(--muted);
+      }
+      .live-note a {
+        color: var(--cyan);
+      }
+
+      /* ---------- High scores ---------- */
+      .scores {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .scores caption {
+        padding-bottom: 1rem;
+        text-align: left;
+        color: var(--muted);
+      }
+      .scores th {
+        padding: 0 0.75rem 0.9rem 0;
+        font-family: var(--pixel);
+        font-weight: 400;
+        font-size: 0.6rem;
+        text-align: left;
+        color: var(--muted);
+      }
+      .scores td {
+        padding: 0.7rem 0.75rem 0.7rem 0;
+        border-top: 2px dotted #3a3a7a;
+        font-size: 1.5rem;
+        white-space: nowrap;
+      }
+      .scores td:first-child {
+        color: var(--yellow);
+      }
+      .scores .passed {
+        color: var(--green);
+      }
+      .scores .failed {
+        color: var(--pink);
+      }
+      .scores a {
+        font-family: var(--pixel);
+        font-size: 0.65rem;
+        color: var(--cyan);
+      }
+      .scores .new {
+        margin-left: 0.5rem;
+        padding: 0.25rem 0.4rem;
+        font-family: var(--pixel);
+        font-size: 0.5rem;
+        color: #000;
+        background: var(--yellow);
+        animation: blink 1.2s steps(1) infinite;
+      }
+      .scores-note {
+        margin: 1.25rem 0 0;
+        color: var(--muted);
+        font-size: 1.25rem;
+      }
+
+      /* ---------- Stages ---------- */
+      .grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.75rem;
+      }
+      .stage {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        flex: 1 1 240px;
+        max-width: calc((100% - 3.5rem) / 3);
+      }
+      .stage .tag {
+        margin-top: auto;
+      }
+      .stage h3 {
+        margin: 0.9rem 0 0;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        color: var(--c);
+      }
+      .stage .world {
+        font-family: var(--pixel);
+        font-size: 0.6rem;
+        color: var(--muted);
+      }
+      .stage ul {
+        margin: 0.9rem 0 1.1rem;
+        padding-left: 1.2rem;
+      }
+      .stage li::marker {
+        color: var(--c);
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.5rem 0.65rem;
+        font-size: 0.55rem;
+        color: #000;
+        background: var(--c);
+      }
+
+      /* ---------- Power-ups ---------- */
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 1.25rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .chip {
+        --c: var(--cyan);
+        margin: 4px;
+        padding: 0.8rem 1rem;
+        font-family: var(--pixel);
+        font-size: 0.62rem;
+        background: #000;
+        color: var(--c);
+        box-shadow:
+          0 -4px 0 0 var(--c),
+          0 4px 0 0 var(--c),
+          -4px 0 0 0 var(--c),
+          4px 0 0 0 var(--c);
+      }
+      .chip:nth-child(4n + 1) {
+        --c: var(--pink);
+      }
+      .chip:nth-child(4n + 2) {
+        --c: var(--yellow);
+      }
+      .chip:nth-child(4n + 3) {
+        --c: var(--green);
+      }
+
+      /* ---------- Pipeline ---------- */
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1.75rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: step;
+      }
+      .pipeline li {
+        position: relative;
+        counter-increment: step;
+        padding: 1rem;
+        background: var(--panel);
+        --c: var(--cyan);
+        margin: 4px;
+        box-shadow:
+          0 -4px 0 0 var(--c),
+          0 4px 0 0 var(--c),
+          -4px 0 0 0 var(--c),
+          4px 0 0 0 var(--c),
+          8px 8px 0 0 #000;
+      }
+      .pipeline li::before {
+        content: counter(step);
+        display: block;
+        font-family: var(--pixel);
+        font-size: 0.7rem;
+        color: var(--yellow);
+      }
+      .pipeline li:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        width: 1.75rem;
+        border-top: 4px dotted var(--pink);
+      }
+      .pipeline strong {
+        display: block;
+        margin: 0.7rem 0 0.4rem;
+        font-family: var(--pixel);
+        font-weight: 400;
+        font-size: 0.62rem;
+        color: var(--ink);
+      }
+      .pipeline span {
+        color: var(--muted);
+        font-size: 1.3rem;
+      }
+
+      /* ---------- Co-op ---------- */
+      .coop {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1.5rem 2rem;
+        align-items: center;
+      }
+      .coop .p2 {
+        font-family: var(--pixel);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--green);
+        text-align: center;
+      }
+      .coop p {
+        margin: 0 0 1rem;
+      }
+      .coop .chips {
+        gap: 0.5rem 1rem;
+      }
+
+      /* ---------- Cheat code ---------- */
+      pre {
+        margin: 0;
+        padding: 1.25rem 1.5rem;
+        overflow-x: auto;
+        font-family: var(--term);
+        font-size: 1.5rem;
         line-height: 1.5;
+        color: var(--green);
+        background: #000;
+        border: 4px solid var(--green);
+        box-shadow: 8px 8px 0 0 #000;
+      }
+      pre .p {
+        color: var(--pink);
+      }
+
+      footer {
+        margin-top: clamp(4rem, 9vw, 6rem);
+        padding: 2rem 1rem 3rem;
+        text-align: center;
+        border-top: 4px solid var(--pink);
+        background: #000;
+      }
+      footer .insert {
+        margin: 0;
+        font-family: var(--pixel);
+        font-size: clamp(0.7rem, 2.4vw, 1rem);
+        color: var(--yellow);
+        animation: blink 1.2s steps(1) infinite;
+      }
+      footer p {
+        margin: 1.25rem 0 0;
+        color: var(--muted);
+      }
+
+      @keyframes bob {
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 52rem) {
+        .pipeline {
+          grid-template-columns: 1fr;
+        }
+        .pipeline li:not(:last-child)::after {
+          left: 50%;
+          top: 100%;
+          width: 0;
+          height: 1.75rem;
+          border-top: 0;
+          border-left: 4px dotted var(--pink);
+        }
+        .coop {
+          grid-template-columns: 1fr;
+        }
+        .stage {
+          max-width: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>SauceDemo UI Tests</h1>
-    <p>
-      End-to-end tests for saucedemo.com, written with Playwright, TypeScript and Playwright BDD.
-    </p>
-    <ul>
-      <li><a href="allure/">Latest Allure report</a></li>
-    </ul>
+    <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <symbol id="heart" viewBox="0 0 7 6">
+        <rect x="1" y="0" width="2" height="1" />
+        <rect x="4" y="0" width="2" height="1" />
+        <rect x="0" y="1" width="7" height="1" />
+        <rect x="0" y="2" width="7" height="1" />
+        <rect x="1" y="3" width="5" height="1" />
+        <rect x="2" y="4" width="3" height="1" />
+        <rect x="3" y="5" width="1" height="1" />
+      </symbol>
+    </svg>
+
+    <div class="hud" aria-hidden="true">
+      <span>1UP <b id="score">------</b></span>
+      <span>HI-SCORE <b id="hiscore">------</b></span>
+      <span class="lives">
+        LIVES
+        <svg class="heart"><use href="#heart" /></svg>
+        <svg class="heart"><use href="#heart" /></svg>
+        <svg class="heart"><use href="#heart" /></svg>
+      </span>
+    </div>
+
+    <main>
+      <header class="hero">
+        <svg class="invader" viewBox="0 0 11 8" role="img" aria-label="Pixel art bug">
+          <rect x="2" y="0" width="1" height="1" />
+          <rect x="8" y="0" width="1" height="1" />
+          <rect x="3" y="1" width="1" height="1" />
+          <rect x="7" y="1" width="1" height="1" />
+          <rect x="2" y="2" width="7" height="1" />
+          <rect x="1" y="3" width="2" height="1" />
+          <rect x="4" y="3" width="3" height="1" />
+          <rect x="8" y="3" width="2" height="1" />
+          <rect x="0" y="4" width="11" height="1" />
+          <rect x="0" y="5" width="1" height="1" />
+          <rect x="2" y="5" width="7" height="1" />
+          <rect x="10" y="5" width="1" height="1" />
+          <rect x="0" y="6" width="1" height="1" />
+          <rect x="2" y="6" width="1" height="1" />
+          <rect x="8" y="6" width="1" height="1" />
+          <rect x="10" y="6" width="1" height="1" />
+          <rect x="3" y="7" width="2" height="1" />
+          <rect x="6" y="7" width="2" height="1" />
+        </svg>
+        <p class="edition">&#9733; BUG HUNTER EDITION &#9733;</p>
+        <h1>SAUCEDEMO<br />UI TESTS</h1>
+        <p class="tagline">Playwright + TypeScript + BDD</p>
+        <p class="cta">
+          <a class="btn btn-start" id="start" href="#scores"
+            ><span class="play" aria-hidden="true"></span>PRESS START</a
+          >
+          <a class="btn btn-ghost" href="https://github.com/kartegi/saucedemo-playwright-bdd-ai"
+            >GITHUB</a
+          >
+        </p>
+        <p class="hint">START takes you to the latest test runs.</p>
+      </header>
+
+      <section aria-labelledby="stats-title">
+        <h2 id="stats-title">PLAYER STATS</h2>
+        <div class="panel c-cyan">
+          <dl class="stats">
+            <div>
+              <dt>TESTS IN LAST RUN</dt>
+              <dd id="stat-total">--</dd>
+            </div>
+            <div>
+              <dt>PASSED</dt>
+              <dd id="stat-passed">--</dd>
+            </div>
+            <div>
+              <dt>STATUS</dt>
+              <dd id="stat-status">--</dd>
+            </div>
+            <div>
+              <dt>LAST RUN</dt>
+              <dd id="stat-date">--</dd>
+            </div>
+          </dl>
+          <div class="gauge-wrap">
+            <div class="gauge-label"><span>HEALTH</span><span id="gauge-text">--</span></div>
+            <div
+              class="gauge"
+              role="progressbar"
+              aria-label="Share of passed tests"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              id="gauge"
+            >
+              <i id="gauge-fill"></i>
+            </div>
+          </div>
+          <p class="live-note" id="live-note">
+            Loading the numbers of the last run on <code>main</code>&hellip;
+          </p>
+        </div>
+      </section>
+
+      <section id="scores" aria-labelledby="scores-title">
+        <h2 id="scores-title">HIGH SCORES</h2>
+        <div class="panel c-yellow">
+          <table class="scores">
+            <caption>
+              The five latest runs on
+              <code>main</code
+              >. Every run keeps its own report.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">DATE (UTC)</th>
+                <th scope="col">PASSED</th>
+                <th scope="col">STATUS</th>
+                <th scope="col"><span class="sr">REPORT</span></th>
+              </tr>
+            </thead>
+            <tbody id="scores-body">
+              <tr>
+                <td colspan="4">Loading the latest runs&hellip;</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="stages-title">
+        <h2 id="stages-title">SELECT STAGE</h2>
+        <div class="grid">
+          <article class="panel stage c-pink">
+            <span class="world">WORLD 1-1</span>
+            <h3>LOGIN</h3>
+            <ul>
+              <li>Successful login</li>
+              <li>Locked out user</li>
+              <li>Invalid input</li>
+              <li>Logout</li>
+            </ul>
+            <span class="tag">CLEARED</span>
+          </article>
+          <article class="panel stage c-cyan">
+            <span class="world">WORLD 1-2</span>
+            <h3>CATALOG</h3>
+            <ul>
+              <li>All products shown</li>
+              <li>Four sorting modes</li>
+            </ul>
+            <span class="tag">CLEARED</span>
+          </article>
+          <article class="panel stage c-yellow">
+            <span class="world">WORLD 1-3</span>
+            <h3>CART</h3>
+            <ul>
+              <li>Add one or many</li>
+              <li>Remove in two places</li>
+              <li>Continue shopping</li>
+            </ul>
+            <span class="tag">CLEARED</span>
+          </article>
+          <article class="panel stage c-green">
+            <span class="world">WORLD 1-4</span>
+            <h3>CHECKOUT</h3>
+            <ul>
+              <li>A complete order</li>
+              <li>Form validation</li>
+            </ul>
+            <span class="tag">CLEARED</span>
+          </article>
+          <article class="panel stage c-pink">
+            <span class="world">BONUS STAGE</span>
+            <h3>FOOTER</h3>
+            <ul>
+              <li>Social profile links</li>
+            </ul>
+            <span class="tag">CLEARED</span>
+          </article>
+        </div>
+      </section>
+
+      <section aria-labelledby="powerups-title">
+        <h2 id="powerups-title">POWER-UPS</h2>
+        <ul class="chips">
+          <li class="chip">PLAYWRIGHT</li>
+          <li class="chip">TYPESCRIPT</li>
+          <li class="chip">PLAYWRIGHT BDD</li>
+          <li class="chip">GHERKIN</li>
+          <li class="chip">PAGE OBJECTS</li>
+          <li class="chip">ALLURE 3</li>
+          <li class="chip">GITHUB ACTIONS</li>
+          <li class="chip">GITHUB PAGES</li>
+          <li class="chip">ESLINT + PRETTIER</li>
+          <li class="chip">HUSKY</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="map-title">
+        <h2 id="map-title">WORLD MAP: THE PIPELINE</h2>
+        <ol class="pipeline">
+          <li><strong>PULL REQUEST</strong><span>One topic per PR</span></li>
+          <li><strong>CHECK</strong><span>Types, lint, format</span></li>
+          <li><strong>TEST</strong><span>Chromium, Firefox, WebKit</span></li>
+          <li><strong>REPORT</strong><span>Allure with run history</span></li>
+          <li><strong>DEPLOY</strong><span>You are standing on it</span></li>
+        </ol>
+      </section>
+
+      <section aria-labelledby="coop-title">
+        <h2 id="coop-title">CO-OP MODE</h2>
+        <div class="panel c-green coop">
+          <div class="p2">PLAYER 2<br />CLAUDE CODE</div>
+          <div>
+            <p>
+              Built together with an AI assistant, on my rules. <code>CLAUDE.md</code> and three
+              project skills keep it on track: how scenarios are written, how page objects look and
+              a step-by-step workflow for every new test.
+            </p>
+            <ul class="chips">
+              <li class="chip">add-scenario</li>
+              <li class="chip">gherkin-conventions</li>
+              <li class="chip">page-object-conventions</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="cheat-title">
+        <h2 id="cheat-title">CHEAT CODE</h2>
+        <pre><span class="p">$</span> npm install
+<span class="p">$</span> npx playwright install
+<span class="p">$</span> cp .env.example .env
+<span class="p">$</span> npm test</pre>
+      </section>
+    </main>
+
+    <footer>
+      <p class="insert">INSERT COIN TO CONTINUE</p>
+      <p>
+        Made with Playwright, TypeScript and a lot of green checks.
+        <a href="https://github.com/kartegi">github.com/kartegi</a>
+      </p>
+    </footer>
+
+    <script>
+      (function () {
+        var pad = function (n) {
+          return String(n).padStart(6, '0');
+        };
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        var set = function (id, text) {
+          $(id).textContent = text;
+        };
+        var stamp = function (ms) {
+          return new Date(ms).toISOString().slice(0, 16).replace('T', ' ');
+        };
+
+        fetch('allure/runs.json', { cache: 'no-store' })
+          .then(function (response) {
+            if (!response.ok) throw new Error('no runs');
+            return response.json();
+          })
+          .then(function (runs) {
+            if (!runs.length) throw new Error('empty');
+            var last = runs[0];
+            var rate = last.total ? Math.round((last.passed / last.total) * 100) : 0;
+
+            set('stat-total', last.total);
+            set('stat-passed', last.passed);
+            set('stat-status', String(last.status || '').toUpperCase());
+            set('stat-date', stamp(last.createdAt).slice(0, 10));
+            set('score', pad(last.passed));
+            set(
+              'hiscore',
+              pad(
+                Math.max.apply(
+                  null,
+                  runs.map(function (r) {
+                    return r.passed;
+                  }),
+                ),
+              ),
+            );
+            set('gauge-text', rate + '%');
+            $('stat-status').classList.toggle('ok', last.status === 'passed');
+            $('gauge').setAttribute('aria-valuenow', rate);
+            requestAnimationFrame(function () {
+              $('gauge-fill').style.width = rate + '%';
+            });
+            $('live-note').innerHTML =
+              'Numbers of the newest run on <code>main</code>. ' +
+              '<a href="allure/' +
+              last.id +
+              '/">Open the full report</a>.';
+
+            var body = $('scores-body');
+            body.textContent = '';
+            runs.forEach(function (run, index) {
+              var row = document.createElement('tr');
+              var cells = [
+                stamp(run.createdAt),
+                run.passed + ' / ' + run.total,
+                String(run.status || '').toUpperCase(),
+              ];
+              cells.forEach(function (text, column) {
+                var cell = document.createElement('td');
+                cell.textContent = text;
+                if (column === 0 && index === 0) {
+                  var badge = document.createElement('span');
+                  badge.className = 'new';
+                  badge.textContent = 'NEW';
+                  cell.appendChild(badge);
+                }
+                if (column === 2) cell.className = run.status === 'passed' ? 'passed' : 'failed';
+                row.appendChild(cell);
+              });
+              var open = document.createElement('td');
+              var link = document.createElement('a');
+              link.href = 'allure/' + run.id + '/';
+              link.textContent = 'OPEN';
+              link.setAttribute('aria-label', 'Open the report of ' + stamp(run.createdAt));
+              open.appendChild(link);
+              row.appendChild(open);
+              body.appendChild(row);
+            });
+          })
+          .catch(function () {
+            $('live-note').textContent =
+              'The numbers of the latest runs are not available right now.';
+            $('scores-body').innerHTML =
+              '<tr><td colspan="4">The latest runs are not available right now.</td></tr>';
+          });
+      })();
+    </script>
   </body>
 </html>
