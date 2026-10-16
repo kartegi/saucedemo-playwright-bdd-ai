@@ -20,7 +20,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     ...playwright.configs['flat/recommended'],
-    files: ['src/**/*.ts', 'features/**/*.ts'],
+    files: ['src/**/*.ts', 'features/**/*.ts', 'tests/**/*.ts'],
     rules: {
       ...playwright.configs['flat/recommended'].rules,
       'playwright/expect-expect': 'off',

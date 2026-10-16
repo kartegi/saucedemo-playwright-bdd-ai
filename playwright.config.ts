@@ -12,6 +12,12 @@ const isCI = !!process.env.CI;
 
 const attachEverything = isCI ? ({ trace: 'on', screenshot: 'on', video: 'on' } as const) : {};
 
+// The AI test agents start from tests/seed.spec.ts. Their project exists only when the MCP server
+// (.mcp.json) sets PLAYWRIGHT_AGENTS, so normal runs and CI never see it.
+const agentsProject = process.env.PLAYWRIGHT_AGENTS
+  ? [{ name: 'agents', testDir: 'tests', use: { ...devices['Desktop Chrome'] } }]
+  : [];
+
 export default defineConfig({
   testDir,
   fullyParallel: true,
@@ -44,5 +50,6 @@ export default defineConfig({
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
     { name: 'mobile-chrome', use: { ...devices['Pixel 7'] } },
+    ...agentsProject,
   ],
 });
