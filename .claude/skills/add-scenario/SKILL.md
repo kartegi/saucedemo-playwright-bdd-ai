@@ -12,13 +12,14 @@ Follow these steps in order and do not skip the verification.
 `feat/dynamic-catalog`). On another branch, `npm run branch -- check` must pass. Never commit, push
 or open a pull request unless asked.
 
-1. **See what already exists.** If there is a plan in `specs/` for this area, start from it. Read the target `.feature` file (or the closest one),
-   `features/steps/*.ts`, and the Page Objects in `src/pages/`. Note which steps, pages and test
-   data you can reuse.
-2. **If a page or element is new, look at the real page before writing locators.** Use the
-   Playwright browser tools if you have them: open https://www.saucedemo.com and inspect the DOM.
-   Log in with the credentials from my local `.env`. Without browser tools, ask me to
-   run `npm run codegen` and share what it shows. Prefer `data-test` attributes.
+1. **See what already exists.** If there is a plan in `specs/` for this area, start from it. Read
+   the target `.feature` file (or the closest one), `features/steps/*.ts`, and the Page Objects in
+   `src/pages/`. Note which steps, pages and test data you can reuse.
+2. **If a page or element is new, look at the real page before writing locators.** With the
+   Playwright test MCP tools, open the browser through the seed: `planner_setup_page` with
+   `project: "agents"` and `seedFile: "tests/seed.spec.ts"`. It logs in through a cookie, so never
+   type or print credentials. Without browser tools, ask me to run `npm run codegen` and share what
+   it shows. Prefer `data-test` attributes.
 3. **Write the scenario** following the `gherkin-conventions` skill.
 4. **Run `npx bddgen`.** It prints a snippet for every missing step. Implement only those; every
    other phrase must reuse an existing step.

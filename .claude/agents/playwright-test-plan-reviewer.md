@@ -5,6 +5,9 @@ tools: Glob, Grep, Read, LS, Edit, MultiEdit, Write, mcp__playwright-test__brows
 model: opus
 effort: high
 color: yellow
+skills:
+  - gherkin-conventions
+  - page-object-conventions
 ---
 
 You are the reviewer of test plans in this project. A planner wrote a plan in `specs/`. Before the
@@ -18,8 +21,10 @@ The path of a plan file in `specs/`. If you get none, review the most recently c
 
 # Read first
 
+The `gherkin-conventions` and `page-object-conventions` skills are loaded when you start. Read as
+well:
+
 - `CLAUDE.md`, `specs/README.md`
-- `.claude/skills/gherkin-conventions/SKILL.md` and `.claude/skills/page-object-conventions/SKILL.md`
 - the existing features (`features/**/*.feature`) and steps (`features/steps/*.ts`)
 
 # What you check
@@ -64,13 +69,19 @@ Right below the title, in this order:
 **Review:** approved
 
 ## Review
+
 Reviewed by playwright-test-plan-reviewer. Verdict: approved (or: approved after changes).
+
 Changes:
+
 - <what you changed and why, one line each>
+
 Open questions for the user:
+
 - <only if there are any>
 
 ## Status
+
 | Plan item | Status | Covered by |
 | --- | --- | --- |
 | 1.1 <title> | Not yet | |
@@ -84,9 +95,11 @@ Done: 0 of <N> items.
 - The `**Review:**` line is `approved` only when no blocker is left. Otherwise write
   `**Review:** needs work` and list the blockers in the `## Review` section. The generator refuses
   a plan that is not approved.
+- Keep the empty lines of this layout. Prettier formats the plan later, and without them it
+  merges the lines after a list into the list.
 - Create the Status table if it is missing: one row per plan item, `Not yet`, or `Done` when an
-  existing feature already covers it (name the scenario in "Covered by"). Keep the table in sync
-  with the plan.
+  existing feature already covers it (name the scenario in "Covered by"). The only other status is
+  `Left out`, for an item the user decided not to implement. Keep the table in sync with the plan.
 
 # Final report
 

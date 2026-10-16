@@ -17,6 +17,8 @@ description: Use when creating or editing Page Objects, step definitions or test
 - Every page extends `BasePage`, which provides `path` and `open()`. Pages shown after login
   extend `AppPage` (a `BasePage` with the header, footer and title); the login page does not, because
   it has none of them.
+- An `AppPage` also declares `titleText`, the title it shows (`readonly titleText = 'Your Cart'`).
+  Steps check it with `toHaveText(cartPage.titleText)` to make sure the right page is open.
 
 ### Registering a new page
 
@@ -77,11 +79,16 @@ No `waitForTimeout`. Playwright already waits for elements and for `expect` cond
 
 - Import `Given`, `When`, `Then` and `expect` from `@fixtures/index`, not from `@playwright/test`.
 - Receive page objects through the first argument: `async ({ cartPage }, name: string) => ...`.
-- Steps are thin: they call Page Objects. No selectors and no data literals inside them.
+- Steps are thin: they call Page Objects. No selectors and no data literals inside them: page
+  titles come from `titleText`, paths from `path`, expected messages from the `.feature` file.
 - **Assertions live in steps.** Use web-first forms (`toHaveText`, `toBeVisible`, `toHaveCount`),
   not `expect(await locator.textContent())`.
 - Type every parameter (`string`, `number`). Custom parameter types are defined in
   `features/steps/parameter-types.ts` with `defineParameterType`.
+- A check that several step files need lives in `features/steps/expectations.ts`
+  (`expectLoadedPicture`, `PRICE_FORMAT`). Reuse it instead of copying the assertions.
+- A check that something is absent (`toBeHidden`, `toHaveCount(0)`) first makes sure the right
+  page is open. Otherwise it also passes on a wrong page.
 
 ## Logging in
 
