@@ -1,22 +1,25 @@
+import type { Locator } from '@playwright/test';
 import { expect, Then, When } from '@fixtures/index';
-import { SORT_LABELS } from '@pages/InventoryPage';
-import { PRODUCTS_COUNT } from '@test-data/products';
+import type { InventoryPage, SortOption } from '@pages/InventoryPage';
+import { expectLoadedPicture, PRICE_FORMAT } from './expectations';
 
-type SortLabel = keyof typeof SORT_LABELS;
+type Compare = (a: string, b: string) => number;
 
-function toSortLabel(label: string): SortLabel {
-  if (!(label in SORT_LABELS)) throw new Error(`Unknown sort option: "${label}"`);
-  return label as SortLabel;
-}
+// The shop compares names with localeCompare, so the check does the same
+const byName: Compare = (a, b) => a.localeCompare(b);
+const byPrice: Compare = (a, b) => Number(a.replace('$', '')) - Number(b.replace('$', ''));
 
-function isSorted<T extends string | number>(values: T[], direction: 'asc' | 'desc'): boolean {
-  const order = direction === 'asc' ? 1 : -1;
-  const sorted = [...values].sort((a, b) => (a < b ? -order : a > b ? order : 0));
-  return values.every((value, index) => value === sorted[index]);
-}
+/** Which list of the page a sort order arranges, and how. */
+const sortedList: Record<SortOption, { list: (page: InventoryPage) => Locator; compare: Compare }> =
+  {
+    az: { list: (page) => page.itemNames, compare: byName },
+    za: { list: (page) => page.itemNames, compare: (a, b) => byName(b, a) },
+    lohi: { list: (page) => page.itemPrices, compare: byPrice },
+    hilo: { list: (page) => page.itemPrices, compare: (a, b) => byPrice(b, a) },
+  };
 
-When('I sort products by {string}', async ({ inventoryPage }, label: string) => {
-  await inventoryPage.sortBy(SORT_LABELS[toSortLabel(label)]);
+When('I sort products by {sortOrder}', async ({ inventoryPage }, option: SortOption) => {
+  await inventoryPage.sortBy(option);
 });
 
 When('I add {string} to the cart', async ({ inventoryPage }, productName: string) => {
@@ -27,24 +30,32 @@ When('I remove {string} on the products page', async ({ inventoryPage }, product
   await inventoryPage.removeFromCart(productName);
 });
 
-Then('I should see all products', async ({ inventoryPage }) => {
-  await expect(inventoryPage.items).toHaveCount(PRODUCTS_COUNT);
+Then(
+  'every product in the catalog has a picture, a name, a description and a price',
+  async ({ inventoryPage }) => {
+    await expect(inventoryPage.items.first()).toBeVisible();
+    for (const item of await inventoryPage.items.all()) {
+      await expectLoadedPicture(inventoryPage.itemPicture(item));
+      await expect(inventoryPage.itemName(item)).toHaveText(/\S/);
+      await expect(inventoryPage.itemDescription(item)).toHaveText(/\S/);
+      await expect(inventoryPage.itemPrice(item)).toHaveText(PRICE_FORMAT);
+    }
+  },
+);
+
+Then('every product in the catalog can be added to the cart', async ({ inventoryPage }) => {
+  await expect(inventoryPage.items.first()).toBeVisible();
+  for (const item of await inventoryPage.items.all()) {
+    await expect(inventoryPage.addToCartButton(item)).toBeEnabled();
+  }
 });
 
-Then('the products are sorted by {string}', async ({ inventoryPage }, label: string) => {
-  const option = SORT_LABELS[toSortLabel(label)];
-  await expect
-    .poll(async () => {
-      switch (option) {
-        case 'az':
-          return isSorted(await inventoryPage.getProductNames(), 'asc');
-        case 'za':
-          return isSorted(await inventoryPage.getProductNames(), 'desc');
-        case 'lohi':
-          return isSorted(await inventoryPage.getProductPrices(), 'asc');
-        case 'hilo':
-          return isSorted(await inventoryPage.getProductPrices(), 'desc');
-      }
-    })
-    .toBe(true);
+Then('the products are sorted by {sortOrder}', async ({ inventoryPage }, option: SortOption) => {
+  const { list, compare } = sortedList[option];
+  const values = list(inventoryPage);
+  await expect(values.first()).toBeVisible();
+  // Sorting changes the order of the values, not the values themselves. So the expected order can
+  // be built from what is shown now, even if the list is still being redrawn.
+  const expected = (await values.allTextContents()).sort(compare);
+  await expect(values).toHaveText(expected);
 });

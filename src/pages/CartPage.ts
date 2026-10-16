@@ -3,6 +3,7 @@ import { AppPage } from './AppPage';
 
 export class CartPage extends AppPage {
   readonly path = '/cart.html';
+  readonly titleText = 'Your Cart';
 
   readonly items: Locator;
   readonly itemNames: Locator;

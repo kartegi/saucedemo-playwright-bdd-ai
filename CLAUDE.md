@@ -16,7 +16,7 @@ reached yet.
 | `npm test -- --project=chromium -g "<scenario title>"` | Run one scenario (fastest loop)                                  |
 | `npx bddgen`                                           | Generate specs; prints a snippet for every missing step          |
 | `npm run branch -- create <type>/<name>`               | Create a branch from the latest `main` (name is validated)       |
-| `npm run check`                                        | typecheck + eslint + prettier. **Run before finishing any task** |
+| `npm run check`                                        | typecheck + eslint + prettier + bddgen. **Run before finishing** |
 | `npm run allure:generate` / `npm run allure:open`      | Build and open the Allure report from `allure-results/`          |
 | `npm run lint:fix`                                     | Auto-fix ESLint issues                                           |
 | `npm run format`                                       | Format everything with Prettier                                  |
@@ -25,7 +25,7 @@ reached yet.
 
 ```
 features/<domain>/*.feature  WHAT is verified, in business language (Gherkin)
-features/steps/              step definitions and custom parameter types
+features/steps/              step definitions, custom parameter types, shared checks (expectations.ts)
 src/pages/                   Page Objects: locators and actions, one class per page
 src/pages/components/        parts shared by several pages (header, footer)
 src/fixtures/index.ts        gives steps their page objects; exports Given/When/Then/expect
@@ -38,6 +38,7 @@ scripts/assemble-site.mjs    builds the Pages site: `site/` plus the five newest
 scripts/branch.mjs           the branch naming standard: `check` a name, `create` a branch
 scripts/commit-message.mjs   the commit message standard, used by the commit-msg hook and CI
 scripts/plan-check.mjs       checks that a plan in specs/ is reviewed, used by the generator
+scripts/standards.mjs        the commit and branch types, shared by branch.mjs and commit-message.mjs
 tests/seed.spec.ts           start state of the AI test agents (logged in standard user)
 specs/                       test plans written by the planner agent
 .mcp.json                    the Playwright test MCP server used by the agents
@@ -111,8 +112,10 @@ Plans are described in `specs/README.md`.
   including the demo credentials that the login page prints, so it must never be committed.
 - `test_run` of the MCP server runs `playwright test` without `bddgen`. Run `npx bddgen` first,
   otherwise the tests are outdated.
-- `{userType}` is a custom parameter type (`standard`, `locked out`, `problem`,
-  `performance glitch`) from `features/steps/parameter-types.ts`.
+- `{userType}` (`standard`, `locked out`, `problem`, `performance glitch`) and `{sortOrder}` (the
+  labels of the sort dropdown, in quotes) are custom parameter types from
+  `features/steps/parameter-types.ts`. A label that is not in the list does not match, so `bddgen`
+  reports the step as missing.
 - `playwright.config.ts` must list `src/fixtures/index.ts` in `steps`, otherwise `bddgen` fails with
   "Can't guess test instance".
 - Allure is configured with `detail: false` on purpose: with the default, the report prints every
@@ -143,8 +146,9 @@ GitHub Actions has two workflows in `.github/workflows/`:
 
 - `ci.yml` runs on every pull request, on every push to `main` and every night at 00:07 UTC
   (`schedule`, not at the full hour because GitHub delays those runs): a `quality` job
-  (`npm run check`), then an `e2e` job that runs the tests in Chromium, Firefox and WebKit. The e2e
-  job gets the credentials from repository secrets, and only its test step sees them.
+  (`npm run check`), then an `e2e` job that runs the tests in Chromium, Firefox, WebKit and Mobile
+  Chrome, one job per project of `playwright.config.ts`. The e2e job gets the credentials from
+  repository secrets, and only its test step sees them.
 - `pages.yml` ("Publish report") runs after `ci.yml` has finished on `main`, never for pull requests.
   It builds the Allure report from the results of that run, assembles the site and publishes it to
   GitHub Pages.

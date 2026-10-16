@@ -16,16 +16,16 @@ Feature: Checkout
     And I continue the checkout
     Then I should see the order summary with "Sauce Labs Backpack"
     When I finish the order
-    Then the order is confirmed
+    Then the order is confirmed with the message "Thank you for your order!"
 
   @regression
-  Scenario Outline: Checkout information is validated
+  Scenario Outline: Checkout requires the <field>
     When I enter checkout information "<firstName>", "<lastName>", "<postalCode>"
     And I continue the checkout
     Then I should see the checkout error "<error>"
 
     Examples:
-      | firstName | lastName | postalCode | error                          |
-      |           | Doe      | 12345      | Error: First Name is required  |
-      | John      |          | 12345      | Error: Last Name is required   |
-      | John      | Doe      |            | Error: Postal Code is required |
+      | field       | firstName | lastName | postalCode | error                          |
+      | first name  |           | Doe      | 12345      | Error: First Name is required  |
+      | last name   | John      |          | 12345      | Error: Last Name is required   |
+      | postal code | John      | Doe      |            | Error: Postal Code is required |

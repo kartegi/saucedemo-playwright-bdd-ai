@@ -1,6 +1,8 @@
 import { test as base, createBdd } from 'playwright-bdd';
 import { CartPage } from '@pages/CartPage';
-import { CheckoutPage } from '@pages/CheckoutPage';
+import { CheckoutCompletePage } from '@pages/CheckoutCompletePage';
+import { CheckoutInformationPage } from '@pages/CheckoutInformationPage';
+import { CheckoutOverviewPage } from '@pages/CheckoutOverviewPage';
 import { DynamicCatalogSpinnerPage } from '@pages/DynamicCatalogSpinnerPage';
 import { InventoryPage } from '@pages/InventoryPage';
 import { LoginPage } from '@pages/LoginPage';
@@ -9,7 +11,9 @@ interface PageObjects {
   loginPage: LoginPage;
   inventoryPage: InventoryPage;
   cartPage: CartPage;
-  checkoutPage: CheckoutPage;
+  checkoutInformationPage: CheckoutInformationPage;
+  checkoutOverviewPage: CheckoutOverviewPage;
+  checkoutCompletePage: CheckoutCompletePage;
   dynamicCatalogPage: DynamicCatalogSpinnerPage;
 }
 
@@ -17,7 +21,9 @@ export const test = base.extend<PageObjects>({
   loginPage: async ({ page }, use) => use(new LoginPage(page)),
   inventoryPage: async ({ page }, use) => use(new InventoryPage(page)),
   cartPage: async ({ page }, use) => use(new CartPage(page)),
-  checkoutPage: async ({ page }, use) => use(new CheckoutPage(page)),
+  checkoutInformationPage: async ({ page }, use) => use(new CheckoutInformationPage(page)),
+  checkoutOverviewPage: async ({ page }, use) => use(new CheckoutOverviewPage(page)),
+  checkoutCompletePage: async ({ page }, use) => use(new CheckoutCompletePage(page)),
   dynamicCatalogPage: async ({ page }, use) => use(new DynamicCatalogSpinnerPage(page)),
 });
 

@@ -41,9 +41,10 @@ npm test
 | `npm run allure:generate` | Build the Allure report from `allure-results/`            |
 | `npm run allure:open`     | Open the generated Allure report                          |
 | `npm run codegen`         | Record actions and get locator suggestions                |
-| `npm run check`           | Typecheck + lint + format check                           |
+| `npm run check`           | Typecheck, lint, format check and step check (`bddgen`)   |
 | `npm run lint`            | ESLint (`lint:fix` to auto-fix)                           |
 | `npm run format`          | Prettier (`format:check` to verify only)                  |
+| `npm run branch`          | Check a branch name or create a branch from `main`        |
 
 Run one scenario by its title (everything after `--` goes to Playwright):
 
@@ -72,10 +73,12 @@ src/
 
 - **Login:** successful login, a locked out user, invalid input.
 - **Logout.**
-- **Product catalog:** all products are shown, sorting by name and by price.
+- **Product catalog:** every product has a picture, a name, a description and a price and can be
+  added to the cart; sorting by name and by price.
 - **Shopping cart:** add products, remove them on the products page and on the cart page, continue
   shopping.
 - **Checkout:** a complete order and the validation of the form.
+- **Dynamic catalog:** the loading spinner, the loaded cards and the login check of the page.
 - **Footer:** links to the social profiles.
 
 ## CI
@@ -86,8 +89,8 @@ GitHub Actions has two workflows.
 02:07 in Central Europe):
 
 1. `quality`: typecheck, lint and format check (`npm run check`).
-2. `e2e`: the tests in Chromium, Firefox and WebKit, one job per browser. It starts only after
-   `quality` passes. The Playwright report, traces, screenshots and videos of failed tests are
+2. `e2e`: the tests in Chromium, Firefox, WebKit and Mobile Chrome (Pixel 7), one job per
+   browser. It starts only after `quality` passes. The Playwright report, traces, screenshots and videos of failed tests are
    uploaded as artifacts. On `main` the raw Allure results are uploaded too.
 
 **Publish report** runs only after the CI of `main` has finished, so pull requests never start it. It
@@ -107,8 +110,8 @@ GitHub Pages:
 - `https://kartegi.github.io/saucedemo-playwright-bdd-ai/` is the start page (`site/index.html`).
 - `.../allure/` opens the newest Allure report.
 - Every run keeps its own report in a folder named after the date it was created (UTC), for example
-  `.../allure/2026-10-12_13-42-12/`. The five latest reports (pushes and nightly runs) are kept, and `allure/runs.json`
-  lists them for the start page.
+  `.../allure/2026-10-12_13-42-12/`. The five latest reports (pushes and nightly runs) are kept,
+  and `allure/runs.json` lists them for the start page.
 
 Each run builds the site on top of the site of the previous run: its reports are taken from the
 Pages artifact of that run, which is kept for 90 days, and the new report is added. The history of
@@ -133,11 +136,17 @@ healer fixes failing tests. They use the Playwright test MCP server from `.mcp.j
   `I add "Sauce Labs Backpack" to the cart` instead of "I click the button".
 - **Page Objects know how to use a page** (find elements, click, type).
   **Steps check the result** (`expect`).
+- **No checks on data the site can change.** A test checks the shape of a list (every product has
+  a name, a price like $12.34 and a picture), never the exact products, prices, order or number.
 - **Elements are found by test id first** (saucedemo uses the `data-test` attribute), then by role.
   CSS and XPath only when nothing else works.
 - **No fixed pauses.** Playwright already waits for elements, so `waitForTimeout` is a last resort.
 - **Every test prepares its own state** and doesn't depend on other tests.
 - **Tags:** `@smoke` for the few most important quick checks, `@regression` for everything else,
   plus a tag for the area (`@cart`, `@auth`).
-- **Git:** one branch and one PR per feature, branches named like `feat/cart`, small commits with clear messages
-  (`feat: add CartPage`), checked by a git hook and in CI.
+- **Git:** one branch and one PR per feature, branches named like `feat/cart`, small commits with
+  clear messages (`feat: add CartPage`), checked by a git hook and in CI.
+
+## License
+
+[MIT](LICENSE)

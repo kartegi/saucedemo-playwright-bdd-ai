@@ -1,12 +1,4 @@
-node_modules
-.features-gen
-test-results
-playwright-report
-blob-report
+# Prettier also skips everything that .gitignore lists
 package-lock.json
-allure-results
-allure-report
-allure-history.jsonl
-_site
 # Local Claude Code settings: git ignores them through the global ignore file, Prettier does not read it
 .claude/settings.local.json

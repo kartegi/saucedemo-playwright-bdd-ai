@@ -5,6 +5,7 @@
 ## Review
 
 Reviewed by playwright-test-plan-reviewer. Verdict: approved after changes.
+
 Changes:
 
 - Corrected the timing claim: the spinner does not stay "about two seconds". The page source waits a random 500 to 3000 ms (`setTimeout`), so the time differs on every load.
@@ -16,18 +17,20 @@ Changes:
 - Marked old 1.6 (menu while loading) as optional. It is 1.4 now and needs the paused clock. Opening the menu and choosing All Items while the spinner is visible was not verified.
 - Marked old 1.4 (no purchase controls) as optional. It is 1.5 now. Dropped its cart check: nothing was added, so the cart is always empty and the check proves nothing.
 - Added the verified facts the generator needs (route, test ids, menu path, existing steps to reuse) to the overview.
-  Open questions for the user:
-- 1.4 and 1.5 are optional. Should the generator include them or leave them out?
+
+Open questions for the user:
+
+- 1.4 and 1.5 are optional. Should the generator include them or leave them out? Answered: left out.
 
 ## Status
 
-| Plan item                                                                         | Status               | Covered by                                         |
-| --------------------------------------------------------------------------------- | -------------------- | -------------------------------------------------- |
-| 1.1 Catalog replaces the spinner and every card has a picture, a name and a price | Done                 | Catalog replaces the loading spinner               |
-| 1.2 Spinner is shown while the catalog loads                                      | Done                 | Loading spinner is shown while the catalog loads   |
-| 1.3 Page is not available after logging out                                       | Done                 | Dynamic catalog is not available after logging out |
-| 1.4 Menu works while the catalog loads (optional)                                 | Left out by decision |                                                    |
-| 1.5 Loaded catalog has no purchase controls (optional)                            | Left out by decision |                                                    |
+| Plan item                                                                         | Status   | Covered by                                         |
+| --------------------------------------------------------------------------------- | -------- | -------------------------------------------------- |
+| 1.1 Catalog replaces the spinner and every card has a picture, a name and a price | Done     | Catalog replaces the loading spinner               |
+| 1.2 Spinner is shown while the catalog loads                                      | Done     | Loading spinner is shown while the catalog loads   |
+| 1.3 Page is not available after logging out                                       | Done     | Dynamic catalog is not available after logging out |
+| 1.4 Menu works while the catalog loads (optional)                                 | Left out |                                                    |
+| 1.5 Loaded catalog has no purchase controls (optional)                            | Left out |                                                    |
 
 Done: 3 of 5 items.
 

@@ -9,8 +9,9 @@ A scenario describes **behaviour a user cares about**, not how the UI is operate
 
 ## Feature file
 
-- Put it in `features/<domain>/<domain>.feature`, one folder per area of the shop
-  (for example `auth`, `inventory`, `cart`, `checkout`).
+- Put it in `features/<domain>/<name>.feature`: one folder per area of the shop (for example
+  `auth`, `inventory`, `cart`, `checkout`) and one file per feature of that area
+  (`auth/login.feature`, `auth/logout.feature`).
 - Put the feature tag on the `Feature:` line; every scenario inherits it.
 - Start with the user story:
 
@@ -33,6 +34,10 @@ Feature: Shopping cart
   (about four steps at most).
 - Use `Scenario Outline` with `Examples` when the same flow runs on different data, such as
   invalid input. Column names must match the `<placeholders>`.
+- Put a placeholder into the title of an outline (`Products can be sorted by <sorting>`):
+  playwright-bdd fills it in, so every example gets a readable title in the reports instead of
+  `Example #2`. When no column reads well in a title, add one that only names the case
+  (`| case | username | ... |`, `Login is rejected for <case>`).
 
 ## Step wording
 
@@ -40,6 +45,8 @@ Feature: Shopping cart
 - Put data in double quotes (`{string}`) and use `{int}` for numbers.
 - Kinds of user use the custom `{userType}` parameter (`standard`, `locked out`, `problem`,
   `performance glitch`): `I log in as a locked out user`.
+- Sort orders use the custom `{sortOrder}` parameter, written in quotes as the dropdown shows
+  them: `I sort products by "Price (low to high)"`.
 - **Do not use these words in a step:** click, press, button, field, input, selector, id, url,
   xpath. Say what the user does, not how the interface is operated.
 - Write expected error messages exactly as the application shows them.
