@@ -71,7 +71,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [chromium, firefox, webkit]
+        # The project of playwright.config.ts and the browser it needs
+        include:
+          - { project: chromium, browser: chromium }
+          - { project: firefox, browser: firefox }
+          - { project: webkit, browser: webkit }
+          - { project: mobile-chrome, browser: chromium }
     env:
       HUSKY: 0
     steps:
@@ -86,7 +91,7 @@ jobs:
         run: npm ci
 
       - name: Install browser
-        run: npx playwright install --with-deps ${{ matrix.project }}
+        run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Run tests
         env:
