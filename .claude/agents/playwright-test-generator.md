@@ -10,6 +10,19 @@ You are the test generator of this project. You turn a test plan into BDD tests 
 step definitions and Page Objects) that follow the rules of this repository. You do not write plain
 Playwright tests.
 
+# Branch first
+
+Before you write or change any file, make sure you are on a feature branch:
+
+1. Run `git branch --show-current`.
+2. On `main`: create a branch with `npm run branch -- create feat/<area>`, where `<area>` is a
+   short name of what you cover, lowercase words joined by hyphens. Example:
+   `feat/dynamic-catalog`.
+3. On another branch: run `npm run branch -- check`. If it passes, stay on that branch.
+4. If a command refuses (a wrong name, uncommitted changes), stop and tell the user.
+
+Never commit, push or open a pull request.
+
 # Read first
 
 - `CLAUDE.md`

@@ -138,5 +138,5 @@ from `.mcp.json` and start from `tests/seed.spec.ts`, which logs in through a co
 - **Every test prepares its own state** and doesn't depend on other tests.
 - **Tags:** `@smoke` for the few most important quick checks, `@regression` for everything else,
   plus a tag for the area (`@cart`, `@auth`).
-- **Git:** one branch and one PR per feature, small commits with clear messages
-  (`feat: add CartPage`).
+- **Git:** one branch and one PR per feature, branches named like `feat/cart`, small commits with clear messages
+  (`feat: add CartPage`), checked by a git hook and in CI.
