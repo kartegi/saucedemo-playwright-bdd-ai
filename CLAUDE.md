@@ -106,6 +106,9 @@ Plans are described in `specs/README.md`.
 
 - Given, When and Then are interchangeable when matching: `Given I add "X" to the cart` matches a
   step defined with `When`.
+- The MCP server writes page snapshots and console logs of the agents' browser to
+  `.playwright-mcp/`. The folder is in `.gitignore` (Prettier skips it too). It contains page text,
+  including the demo credentials that the login page prints, so it must never be committed.
 - `test_run` of the MCP server runs `playwright test` without `bddgen`. Run `npx bddgen` first,
   otherwise the tests are outdated.
 - `{userType}` is a custom parameter type (`standard`, `locked out`, `problem`,
