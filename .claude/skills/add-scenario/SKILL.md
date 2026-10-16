@@ -7,7 +7,7 @@ description: Use when asked to add, extend or cover a feature, scenario, page or
 
 Follow these steps in order and do not skip the verification.
 
-1. **See what already exists.** Read the target `.feature` file (or the closest one),
+1. **See what already exists.** If there is a plan in `specs/` for this area, start from it. Read the target `.feature` file (or the closest one),
    `features/steps/*.ts`, and the Page Objects in `src/pages/`. Note which steps, pages and test
    data you can reuse.
 2. **If a page or element is new, look at the real page before writing locators.** Use the

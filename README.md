@@ -119,6 +119,13 @@ In CI the Chromium run records a screenshot, a video and a trace for every test,
 browsers do it for failed tests only. All of them stay in the published reports, so a test can be
 investigated from the page alone.
 
+## Test agents
+
+The repo has Playwright's test agents set up for this BDD structure (`.claude/agents/`): the
+planner explores the app and writes a plan to `specs/`, the generator turns a plan into scenarios,
+steps and page objects, and the healer fixes failing tests. They use the Playwright test MCP server
+from `.mcp.json` and start from `tests/seed.spec.ts`, which logs in through a cookie.
+
 ## How I write tests
 
 - **Scenarios describe what the user does, not what the screen looks like.**
