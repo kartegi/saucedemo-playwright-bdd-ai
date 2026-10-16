@@ -65,11 +65,19 @@ const [mode, value] = process.argv.slice(2);
 if (mode === '--text') {
   report([(value ?? '').trimEnd()]);
 } else if (mode === '--range' && value) {
-  const subjects = execFileSync('git', ['log', '--no-merges', '--format=%s', value], {
-    encoding: 'utf8',
-  })
-    .split('\n')
-    .filter(Boolean);
+  let subjects;
+  try {
+    subjects = execFileSync('git', ['log', '--no-merges', '--format=%s', value], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    })
+      .split('\n')
+      .filter(Boolean);
+  } catch (error) {
+    console.error(`Could not read the commits of ${value}:\n${error.stderr}`);
+    console.error('Is the whole history fetched? In CI the checkout needs fetch-depth: 0.');
+    process.exit(1);
+  }
   report(subjects);
   console.log(`${subjects.length} commit message(s) follow the standard.`);
 } else if (mode && !mode.startsWith('--')) {
