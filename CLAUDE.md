@@ -15,6 +15,7 @@ reached yet.
 | `npm run test:smoke` / `npm run test:regression`       | Run only scenarios with that tag                                 |
 | `npm test -- --project=chromium -g "<scenario title>"` | Run one scenario (fastest loop)                                  |
 | `npx bddgen`                                           | Generate specs; prints a snippet for every missing step          |
+| `npm run branch -- create <type>/<name>`               | Create a branch from the latest `main` (name is validated)       |
 | `npm run check`                                        | typecheck + eslint + prettier. **Run before finishing any task** |
 | `npm run allure:generate` / `npm run allure:open`      | Build and open the Allure report from `allure-results/`          |
 | `npm run lint:fix`                                     | Auto-fix ESLint issues                                           |
@@ -34,6 +35,8 @@ src/config/env.ts            typed environment config; credentials come from `.e
 allurerc.mjs                 Allure report settings (grouping, history)
 site/                        source of the GitHub Pages site; the Allure reports go to `/allure/`
 scripts/assemble-site.mjs    builds the Pages site: `site/` plus the five newest dated reports
+scripts/branch.mjs           the branch naming standard: `check` a name, `create` a branch
+scripts/commit-message.mjs   the commit message standard, used by the commit-msg hook and CI
 tests/seed.spec.ts           start state of the AI test agents (logged in standard user)
 specs/                       test plans written by the planner agent
 .mcp.json                    the Playwright test MCP server used by the agents
@@ -136,9 +139,20 @@ Keep both green: run `npm run check` and the tests locally before pushing.
 
 ## Git workflow
 
-- One branch and PR per feature or concern (`feat/cart`, `ci/e2e-tests`, `chore/...`).
+- One branch and PR per feature or concern.
+- Branch names are `<type>/<name>`: the type is one of `feat`, `fix`, `chore`, `ci`, `docs`, `test`,
+  `refactor`, the name is lowercase words joined by hyphens, at most 50 characters in total
+  (`feat/cart`, `ci/e2e-tests`). `scripts/branch.mjs` checks it in the pre-commit hook, which also
+  stops commits on `main`, and in CI for pull requests.
+- Before you write or change code while on `main`, create a branch:
+  `npm run branch -- create <type>/<name>`. Creating a local branch needs no asking. Committing,
+  pushing and opening pull requests still do.
 - Small commits in Conventional Commits style, **without a scope**: `feat: add CartPage`, never
-  `feat(cart): add CartPage`. The same goes for PR titles.
+  `feat(cart): add CartPage`. The type is one of `feat`, `fix`, `chore`, `ci`, `docs`, `test`,
+  `refactor`. The description is English (plain ASCII), starts with a lowercase letter, has no
+  period at the end, and the whole first line has at most 72 characters. The same goes for PR
+  titles. `scripts/commit-message.mjs` checks this in the `commit-msg` hook and in CI, for the PR
+  title and for every commit of a pull request.
 - Do not commit, push, or open PRs unless asked. Never use `--no-verify`.
 
 ## Notes

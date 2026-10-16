@@ -22,6 +22,7 @@
     "allure:generate": "allure generate allure-results",
     "allure:open": "allure open allure-report",
     "codegen": "playwright codegen https://www.saucedemo.com",
+    "branch": "node scripts/branch.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

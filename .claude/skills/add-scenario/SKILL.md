@@ -7,6 +7,11 @@ description: Use when asked to add, extend or cover a feature, scenario, page or
 
 Follow these steps in order and do not skip the verification.
 
+**First be on a feature branch.** On `main`, create one with
+`npm run branch -- create feat/<area>` (lowercase words with hyphens, for example
+`feat/dynamic-catalog`). On another branch, `npm run branch -- check` must pass. Never commit, push
+or open a pull request unless asked.
+
 1. **See what already exists.** If there is a plan in `specs/` for this area, start from it. Read the target `.feature` file (or the closest one),
    `features/steps/*.ts`, and the Page Objects in `src/pages/`. Note which steps, pages and test
    data you can reuse.
