@@ -32,6 +32,9 @@ jobs:
       HUSKY: 0
     steps:
       - uses: actions/checkout@v7
+        with:
+          # A pull request needs its whole history to check the commit messages
+          fetch-depth: ${{ github.event_name == 'pull_request' && 0 || 1 }}
 
       - uses: actions/setup-node@v7
         with:
@@ -40,6 +43,22 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Check the branch name
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: node scripts/branch.mjs check "$BRANCH"
+
+      - name: Check the pull request title and the commit messages
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node scripts/commit-message.mjs --text "$TITLE"
+          node scripts/commit-message.mjs --range "$BASE..$HEAD"
 
       - name: Check
         run: npm run check
