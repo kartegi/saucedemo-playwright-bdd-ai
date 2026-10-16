@@ -65,7 +65,11 @@ jobs:
       - name: Get the previous site
         if: ${{ steps.results.outputs.found == 'true' }}
         run: |
-          run_id=$(gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts?name=github-pages&per_page=1" --jq '.artifacts[] | select(.expired == false) | .workflow_run.id')
+          # The API does not list the artifacts by date, so the newest one is picked by its creation
+          # time. Taking the first one lost the report of a run that was not first in the list
+          run_id=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/artifacts?name=github-pages&per_page=100" \
+            --jq '.artifacts[] | select(.expired == false) | "\(.created_at) \(.workflow_run.id)"' \
+            | sort | tail -n 1 | cut -d ' ' -f 2)
           if [ -n "$run_id" ]; then
             gh run download "$run_id" --name github-pages --dir previous
             mkdir previous-site

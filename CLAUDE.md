@@ -124,7 +124,9 @@ Plans are described in `specs/README.md`.
 - A Pages deployment replaces the whole site, so `scripts/assemble-site.mjs` always builds `site/`
   and the reports together. Every run keeps its report in `allure/<date>/` (UTC), the five newest are
   kept and listed in `allure/runs.json`. The older reports come from the Pages artifact of the
-  previous run, which is why that artifact is kept for 90 days. Never publish a report alone.
+  previous run, which is why that artifact is kept for 90 days. The workflow picks the newest
+  artifact by its creation time: the artifacts API does not list them by date. Never publish a
+  report alone.
 - In CI the Chromium project records a trace, a screenshot and a video for every test
   (`attachEverything` in `playwright.config.ts`), the other browsers only for failures. They stay in
   the published report on purpose. Traces and error-context files contain the typed demo
