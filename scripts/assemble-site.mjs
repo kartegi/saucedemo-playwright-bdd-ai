@@ -95,7 +95,6 @@ for (const kept of ids.slice(0, keep)) {
     total: summary.stats.total,
     passed: summary.stats.passed,
     status: summary.status,
-    jobHref: summary.jobHref ?? '',
   });
 }
 await writeFile(path.join(allure, 'runs.json'), `${JSON.stringify(runs, null, 2)}\n`);
