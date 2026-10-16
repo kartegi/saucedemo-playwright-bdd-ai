@@ -335,6 +335,10 @@
       }
 
       /* ---------- High scores ---------- */
+      /* If the table is still too wide, it scrolls inside its panel, never the whole page */
+      .scores-panel {
+        overflow-x: auto;
+      }
       .scores {
         width: 100%;
         border-collapse: collapse;
@@ -609,6 +613,41 @@
         }
       }
 
+      /* Phones: the table of the runs must fit without scrolling */
+      @media (max-width: 30rem) {
+        .scores-panel {
+          padding: 1.25rem 1rem;
+        }
+        .scores th,
+        .scores td {
+          padding-right: 0.5rem;
+        }
+        .scores td {
+          font-size: 1.25rem;
+        }
+        /* The date and the time go on two lines */
+        .scores td:first-child {
+          white-space: normal;
+        }
+      }
+
+      /* The smallest phones (320 px) */
+      @media (max-width: 22rem) {
+        .scores-panel {
+          padding: 1rem 0.75rem;
+        }
+        .scores th,
+        .scores td {
+          padding-right: 0.25rem;
+        }
+        .scores td {
+          font-size: 1.1rem;
+        }
+        .scores a {
+          font-size: 0.55rem;
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -722,7 +761,7 @@
 
       <section id="scores" aria-labelledby="scores-title">
         <h2 id="scores-title">HIGH SCORES</h2>
-        <div class="panel c-yellow">
+        <div class="panel c-yellow scores-panel">
           <table class="scores">
             <caption>
               The five latest runs on
