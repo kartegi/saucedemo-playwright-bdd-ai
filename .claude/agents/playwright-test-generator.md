@@ -51,12 +51,14 @@ Never commit, push or open a pull request.
    - assertions in the steps
      Do not call `generator_write_test`. It can only write into `.features-gen/`, which is
      generated and never edited.
-6. Run `npx bddgen`, then `npm test -- --project=chromium -g "<scenario title>"`, then the whole
-   feature and `npm run check`. Fix a failure at its root cause. Never add `waitForTimeout` and never
-   weaken an assertion to get green.
+6. If the plan is a file, format it first with `npx prettier --write <plan>`: other agents write it
+   and it is not formatted, so `npm run check` would fail on it. Then run `npx bddgen`, then
+   `npm test -- --project=chromium -g "<scenario title>"`, then the whole feature and
+   `npm run check`. Fix a failure at its root cause. Never add `waitForTimeout` and never weaken an
+   assertion to get green.
 7. If the plan is a file, update its `## Status` table: mark the implemented items `Done`, name
    the scenario in "Covered by" and fix the "Done: x of y items" line. Change nothing else in the
-   plan.
+   plan. Format the plan again with `npx prettier --write <plan>`.
 8. Report briefly: which scenarios you added, which steps you reused and which you created. Do not
    commit.
 
