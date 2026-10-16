@@ -532,6 +532,12 @@
       .coop p {
         margin: 0 0 1rem;
       }
+      .coop .group {
+        margin: 1.5rem 0 0.75rem;
+        font-family: var(--pixel);
+        font-size: 0.6rem;
+        color: var(--muted);
+      }
       .coop .chips {
         gap: 0.5rem 1rem;
       }
@@ -823,7 +829,7 @@
         <h2 id="map-title">WORLD MAP: THE PIPELINE</h2>
         <ol class="pipeline">
           <li><strong>PULL REQUEST</strong><span>One topic per PR</span></li>
-          <li><strong>CHECK</strong><span>Types, lint, format</span></li>
+          <li><strong>CHECK</strong><span>Types, lint, format, steps</span></li>
           <li><strong>TEST</strong><span>Chromium, Firefox, WebKit, mobile</span></li>
           <li><strong>REPORT</strong><span>Allure with run history</span></li>
           <li><strong>DEPLOY</strong><span>You are standing on it</span></li>
@@ -840,10 +846,24 @@
               project skills keep it on track: how scenarios are written, how page objects look and
               a step-by-step workflow for every new test.
             </p>
-            <ul class="chips">
+            <p>
+              Four Playwright test agents work in a chain: the planner explores a page and writes a
+              plan, a reviewer on a stronger model checks it against the rules and the real page,
+              the generator turns the approved plan into scenarios, and the healer fixes failing
+              tests.
+            </p>
+            <p class="group" id="skills-title">SKILLS</p>
+            <ul class="chips" aria-labelledby="skills-title">
               <li class="chip">add-scenario</li>
               <li class="chip">gherkin-conventions</li>
               <li class="chip">page-object-conventions</li>
+            </ul>
+            <p class="group" id="agents-title">AGENTS</p>
+            <ul class="chips" aria-labelledby="agents-title">
+              <li class="chip">planner</li>
+              <li class="chip">plan-reviewer</li>
+              <li class="chip">generator</li>
+              <li class="chip">healer</li>
             </ul>
           </div>
         </div>
