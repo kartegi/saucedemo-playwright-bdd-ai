@@ -12,3 +12,5 @@ allure-results/
 allure-report/
 allure-history.jsonl
 _site/
+# Page snapshots and console logs written by the Playwright MCP server (the test agents)
+.playwright-mcp/
