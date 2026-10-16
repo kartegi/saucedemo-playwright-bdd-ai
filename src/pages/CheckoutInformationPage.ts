@@ -2,22 +2,15 @@ import type { Locator, Page } from '@playwright/test';
 import type { CheckoutInfo } from '@test-data/checkout';
 import { AppPage } from './AppPage';
 
-export class CheckoutPage extends AppPage {
+export class CheckoutInformationPage extends AppPage {
   readonly path = '/checkout-step-one.html';
+  readonly titleText = 'Checkout: Your Information';
 
-  // Your information
   readonly firstNameInput: Locator;
   readonly lastNameInput: Locator;
   readonly postalCodeInput: Locator;
   readonly continueButton: Locator;
   readonly errorMessage: Locator;
-
-  // Overview
-  readonly summaryItems: Locator;
-  readonly finishButton: Locator;
-
-  // Completion
-  readonly completeHeader: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -26,11 +19,6 @@ export class CheckoutPage extends AppPage {
     this.postalCodeInput = page.getByTestId('postalCode');
     this.continueButton = page.getByTestId('continue');
     this.errorMessage = page.getByTestId('error');
-
-    this.summaryItems = page.getByTestId('inventory-item');
-    this.finishButton = page.getByTestId('finish');
-
-    this.completeHeader = page.getByTestId('complete-header');
   }
 
   async fillInformation({ firstName, lastName, postalCode }: Partial<CheckoutInfo>): Promise<void> {
@@ -41,9 +29,5 @@ export class CheckoutPage extends AppPage {
 
   async continue(): Promise<void> {
     await this.continueButton.click();
-  }
-
-  async finish(): Promise<void> {
-    await this.finishButton.click();
   }
 }

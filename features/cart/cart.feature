@@ -10,9 +10,9 @@ Feature: Shopping cart
   @smoke
   Scenario: Add a product to the cart
     When I add "Sauce Labs Backpack" to the cart
-    Then the cart badge shows 1
-    When I open the shopping cart
+    And I open the shopping cart
     Then the cart contains "Sauce Labs Backpack"
+    And the cart badge shows 1
 
   @regression
   Scenario: Add several products to the cart

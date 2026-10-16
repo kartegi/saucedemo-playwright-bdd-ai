@@ -4,6 +4,9 @@ import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 
 export abstract class AppPage extends BasePage {
+  /** The title the page shows below the header, for example "Products". */
+  abstract readonly titleText: string;
+
   readonly header: Header;
   readonly footer: Footer;
   readonly title: Locator;

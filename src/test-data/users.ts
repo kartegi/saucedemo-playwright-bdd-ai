@@ -1,6 +1,9 @@
 import { requireEnv } from '@config/env';
 
-export type UserType = 'standard' | 'locked out' | 'problem' | 'performance glitch';
+/** The kinds of user a scenario can name, also the values of the `{userType}` parameter. */
+export const USER_TYPES = ['standard', 'locked out', 'problem', 'performance glitch'] as const;
+
+export type UserType = (typeof USER_TYPES)[number];
 
 export interface Credentials {
   username: string;

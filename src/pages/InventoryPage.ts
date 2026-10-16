@@ -10,8 +10,11 @@ export const SORT_LABELS = {
   'Price (high to low)': 'hilo',
 } as const satisfies Record<string, SortOption>;
 
+export type SortLabel = keyof typeof SORT_LABELS;
+
 export class InventoryPage extends AppPage {
   readonly path = '/inventory.html';
+  readonly titleText = 'Products';
 
   readonly items: Locator;
   readonly itemNames: Locator;
@@ -26,12 +29,32 @@ export class InventoryPage extends AppPage {
     this.sortDropdown = page.getByTestId('product-sort-container');
   }
 
+  itemPicture(item: Locator): Locator {
+    return item.getByTestId(/-img$/);
+  }
+
+  itemName(item: Locator): Locator {
+    return item.getByTestId('inventory-item-name');
+  }
+
+  itemDescription(item: Locator): Locator {
+    return item.getByTestId('inventory-item-desc');
+  }
+
+  itemPrice(item: Locator): Locator {
+    return item.getByTestId('inventory-item-price');
+  }
+
+  addToCartButton(item: Locator): Locator {
+    return item.getByRole('button', { name: 'Add to cart' });
+  }
+
   private item(productName: string): Locator {
     return this.items.filter({ hasText: productName });
   }
 
   async addToCart(productName: string): Promise<void> {
-    await this.item(productName).getByRole('button', { name: 'Add to cart' }).click();
+    await this.addToCartButton(this.item(productName)).click();
   }
 
   async removeFromCart(productName: string): Promise<void> {
@@ -40,14 +63,5 @@ export class InventoryPage extends AppPage {
 
   async sortBy(option: SortOption): Promise<void> {
     await this.sortDropdown.selectOption(option);
-  }
-
-  async getProductNames(): Promise<string[]> {
-    return this.itemNames.allTextContents();
-  }
-
-  async getProductPrices(): Promise<number[]> {
-    const texts = await this.itemPrices.allTextContents();
-    return texts.map((text) => Number(text.replace('$', '')));
   }
 }

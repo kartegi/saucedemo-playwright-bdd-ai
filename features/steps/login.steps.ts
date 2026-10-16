@@ -27,13 +27,14 @@ When('I log out', async ({ inventoryPage }) => {
   await inventoryPage.header.logout();
 });
 
+// A path given to toHaveURL is resolved against the baseURL of the config
 Then('I should see the products page', async ({ page, inventoryPage }) => {
-  await expect(page).toHaveURL(/inventory\.html$/);
-  await expect(inventoryPage.title).toHaveText('Products');
+  await expect(page).toHaveURL(inventoryPage.path);
+  await expect(inventoryPage.title).toHaveText(inventoryPage.titleText);
 });
 
 Then('I should see the login page', async ({ page, loginPage }) => {
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(loginPage.path);
   await expect(loginPage.loginButton).toBeVisible();
 });
 

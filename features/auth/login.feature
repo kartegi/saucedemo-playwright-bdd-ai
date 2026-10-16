@@ -23,12 +23,12 @@ Feature: Login
     Then I should see the login error "Epic sadface: Username and password do not match any user in this service"
 
   @regression
-  Scenario Outline: Login is rejected for invalid input
+  Scenario Outline: Login is rejected for <case>
     When I log in with username "<username>" and password "<password>"
     Then I should see the login error "<error>"
 
     Examples:
-      | username     | password     | error                                                                     |
-      | unknown_user | any_password | Epic sadface: Username and password do not match any user in this service |
-      |              | any_password | Epic sadface: Username is required                                        |
-      | any_user     |              | Epic sadface: Password is required                                        |
+      | case              | username     | password     | error                                                                     |
+      | an unknown user   | unknown_user | any_password | Epic sadface: Username and password do not match any user in this service |
+      | an empty username |              | any_password | Epic sadface: Username is required                                        |
+      | an empty password | any_user     |              | Epic sadface: Password is required                                        |

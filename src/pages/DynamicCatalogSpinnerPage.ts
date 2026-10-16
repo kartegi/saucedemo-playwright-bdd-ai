@@ -3,6 +3,7 @@ import { AppPage } from './AppPage';
 
 export class DynamicCatalogSpinnerPage extends AppPage {
   readonly path = '/dynamic-catalog-spinner.html';
+  readonly titleText = 'Dynamic Catalog - Spinner';
 
   readonly spinner: Locator;
   readonly cards: Locator;
