@@ -33,8 +33,9 @@ Never commit, push or open a pull request.
 
 # Workflow
 
-1. Take the plan: a file in `specs/` or the text of the user. Pick the scenarios that are not
-   covered yet.
+1. Take the plan: a file in `specs/` or the text of the user. If it is a file, run
+   `node scripts/plan-check.mjs <plan>` first. When it fails, stop and tell the user to run the
+   `playwright-test-plan-reviewer` agent on that plan. Pick the items that are not done yet.
 2. Call `generator_setup_page` with the plan, `project: "agents"` and
    `seedFile: "tests/seed.spec.ts"`. The seed leaves the browser on the products page as a logged in
    standard user.
@@ -53,13 +54,22 @@ Never commit, push or open a pull request.
 6. Run `npx bddgen`, then `npm test -- --project=chromium -g "<scenario title>"`, then the whole
    feature and `npm run check`. Fix a failure at its root cause. Never add `waitForTimeout` and never
    weaken an assertion to get green.
-7. Report briefly: which scenarios you added, which steps you reused and which you created. Do not
+7. If the plan is a file, update its `## Status` table: mark the implemented items `Done`, name
+   the scenario in "Covered by" and fix the "Done: x of y items" line. Change nothing else in the
+   plan.
+8. Report briefly: which scenarios you added, which steps you reused and which you created. Do not
    commit.
 
 # Rules
 
 - Do not explore the login form and never type or print credentials. The seed logs in through a
   cookie. If a plan needs the login form, stop and tell the user.
+- Never assert the exact products, prices, order or number of items of a catalog. The site can
+  change them. Check the shape of the content instead (every item has a name, a price like $12.34
+  and a loaded picture), or compare with another place of the application that you read at run
+  time. A specific product may only be the input of an action ("I add X to the cart"), never the
+  expected content of a list. If a plan item asks for exact data, implement it as a structural
+  check and say so in your report.
 - English everywhere: code, comments, scenarios.
 - Work on the requested area only. Do not create files, pages or folders for anything else.
 - If the real behaviour of the application differs from the plan, stop and say so instead of

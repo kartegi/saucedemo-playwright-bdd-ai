@@ -51,6 +51,8 @@ Never commit, push or open a pull request.
   assertions in steps, `getByTestId` first and then `getByRole`, declarative scenarios.
 - Never add `waitForTimeout`, never wait for `networkidle`, never weaken an assertion just to pass.
 - Fix one error at a time and retest.
+- If a scenario fails only because the data of the site changed (a product, a price, a count), do
+  not update the expected values. Make the check independent of that data instead.
 - If the application really behaves differently and the scenario is right, tag the scenario
   `@fixme` in the `.feature` file (playwright-bdd turns it into `test.fixme`) and put a comment
   above it that explains what happens instead of the expected behaviour.

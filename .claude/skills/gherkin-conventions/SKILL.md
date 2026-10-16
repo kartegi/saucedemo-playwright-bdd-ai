@@ -62,6 +62,14 @@ When I add "Sauce Labs Backpack" to the cart
 Then the cart badge shows 1
 ```
 
+## Data the site can change
+
+Do not assert the exact products, prices, order or number of items of a list: the site can change
+them and the test breaks although nothing is wrong. Check the shape instead (every item has a name,
+a price like `$12.34` and a picture) or compare with another place of the application, read at
+run time. A specific product is fine as the input of an action (`I add "X" to the cart`), not as the
+expected content of a list.
+
 ## Tags
 
 - `@smoke`: the critical happy path of a feature, fast. Usually one scenario per feature.
